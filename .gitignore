@@ -1,0 +1,80 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.lib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+!sample_message.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Configuration files
+*.env
+.env
+.env.local
+.env.production
+.env.staging
+config.json
+config.yaml
+config.yml
+*.config.json
+*.config.yaml
+*.config.yml
+secrets.json
+secrets.yaml
+secrets.yml
+
+# Environment config files
+config/environments/development.yaml
+config/environments/production.yaml
+config/environments/env.yaml
+config/environments/staging.yaml
+config/environments/*.yaml
+config/environments/*.yml
+config/environments/*.json
+
+# EXCEPT: Allow template files
+!config/environments/*.yaml.example
+!config/environments/*.yml.example
+!config/environments/*.json.example
+
+# Database configuration
+database.json
+database.yaml
+database.yml
+
+# API keys and credentials
+*.key
+*.pem
+*.crt
+*.p12
+credentials.json
+service-account.json
+firebase_admin_sdk.json
+
+# VS Code
+.vscode
+__debug_bin
+
+# GoLand
+.idea
+.vscode
+
+# jest
+node_modules/
+package-lock.json
+
+# vendor
+vendor/
+
+scripts/setUp/data_kafka/*
+scripts/setUp/data_monitor/grafana-storage/*
+scripts/setUp/data_monitor/prometheus_data/*
