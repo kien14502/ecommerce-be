@@ -1,15 +1,29 @@
 package repo
 
-// UserRepositoryType is a placeholder for user repository methods
-type UserRepositoryType struct {
+type IUserRepository interface {
+	FindOne(userID string) string
+	FindAll() []string
+	GetUserByEmail(email string) string
 }
 
-// NewUserRepository creates a new instance of UserRepositoryType
-func NewUserRepository() *UserRepositoryType {
-	return &UserRepositoryType{}
+type userRepositoryType struct {
 }
 
-// GetUserByID is a placeholder method to get user by ID
-func (ur *UserRepositoryType) GetUserByID(userID string) string {
-	return "User Data for " + userID
+// FindAll implements [impl.IUserRepository].
+func (u *userRepositoryType) FindAll() []string {
+	panic("unimplemented")
+}
+
+// FindOne implements [impl.IUserRepository].
+func (u *userRepositoryType) FindOne(userID string) string {
+	panic("unimplemented")
+}
+
+// GetUserByEmail implements [impl.IUserRepository].
+func (u *userRepositoryType) GetUserByEmail(email string) string {
+	panic("unimplemented")
+}
+
+func NewUserRepository() IUserRepository {
+	return &userRepositoryType{}
 }

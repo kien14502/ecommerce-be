@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  ecommerce-mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root12345
+      - MYSQL_DATABASE=ecommerce_db
+    ports:
+      - "33306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ecommerce-network
+  redis:
+    image: redis:6.0
+    container_name: ecommerce-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce-network
+volumes:
+  mysql_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge

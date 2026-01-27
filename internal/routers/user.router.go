@@ -2,11 +2,12 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kien14502/ecommerce-be/internal/controllers"
+	"github.com/kien14502/ecommerce-be/internal/wire"
 )
 
 func RegisterUserRoutes(rg *gin.RouterGroup) {
-	userController := controllers.NewUserController()
+
+	userController, _ := wire.InitUserRouterHandler()
 	//router
 	users := rg.Group("/users")
 	{

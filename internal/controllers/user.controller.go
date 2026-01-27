@@ -5,19 +5,18 @@ import (
 	"github.com/kien14502/ecommerce-be/internal/services"
 )
 
-type UserController struct{
-	userService *services.UserServiceType
+type UserController struct {
+	userService services.IUserService
 }
 
-func NewUserController() *UserController {
+func NewUserController(userService services.IUserService) *UserController {
 	return &UserController{
-		userService: services.NewUserService(),
+		userService: userService,
 	}
 }
 
 func (uc *UserController) GetUser(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"user": uc.userService.GetUserName("123"),
-	})
-	
+	userId := uc.userService.GetUserName("123")
+
+	c.JSON(200, gin.H{"userID": userId})
 }
