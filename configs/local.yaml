@@ -1,8 +1,10 @@
 server:
   port: 8000
+  cors: ["http://localhost:5173", "http://localhost:3000"]
+  version: 1.0.0
 mysql:
   host: 127.0.0.1
-  port: 33306
+  port: 3306
   user: root
   password: root12345
   db_name: ecommerce_db

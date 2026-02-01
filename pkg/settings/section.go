@@ -20,7 +20,9 @@ type MySqlSetting struct {
 }
 
 type ServerSetting struct {
-	Port int `mapstructure:"port"`
+	Port    int      `mapstructure:"port"`
+	Cors    []string `mapstructure:"cors"`
+	Version string   `mapstructure:"version"`
 }
 
 type LoggerSetting struct {

@@ -5,12 +5,12 @@ import (
 	"github.com/kien14502/ecommerce-be/internal/wire"
 )
 
-func RegisterUserRoutes(rg *gin.RouterGroup) {
+func UserRouter(rg *gin.RouterGroup) {
 
 	userController, _ := wire.InitUserRouterHandler()
 	//router
 	users := rg.Group("/users")
 	{
-		users.GET("", userController.GetUser)
+		users.GET(":id", userController.GetUser)
 	}
 }

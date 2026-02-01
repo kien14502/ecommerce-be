@@ -13,7 +13,8 @@ type userService struct {
 
 // GetUserName implements [IUserService].
 func (u *userService) GetUserName(userID string) string {
-	return u.userRepo.FindOne(userID)
+	panic("unimplemented")
+
 }
 
 // Register implements [IUserService].

@@ -21,8 +21,15 @@ func checkErrPanic(err error, errString string) {
 
 func MySqlInit() {
 	config := global.Config.MySql
+	fmt.Printf(
+		"MySQL connect to host=%s port=%d user=%s",
+		config.Host,
+		config.Port,
+		config.Username,
+	)
 	dsn := "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 	var configDSN = fmt.Sprintf(dsn, config.Username, config.Password, config.Host, config.Port, config.DBName)
+
 	db, err := gorm.Open(mysql.Open(configDSN), &gorm.Config{
 		SkipDefaultTransaction: false,
 	})
@@ -48,9 +55,10 @@ func SetPool() {
 
 func migrateTables() {
 	err := global.Mdb.AutoMigrate(
-		&models.UserModel{},
-		&models.Role{},
+		&models.User{},
+		&models.RoleModel{},
 	)
+
 	checkErrPanic(err, "Failed to migrate database")
 }
 

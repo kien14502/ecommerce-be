@@ -1,18 +1,14 @@
 package initialize
 
 import (
-	"strconv"
-
-	"github.com/kien14502/ecommerce-be/global"
+	"github.com/gin-gonic/gin"
 )
 
-func Run() {
+func Run() *gin.Engine {
 	LoadConfigInit()
 	LoggerInit()
 	MySqlInit()
 	RedisInit()
 	r := RouterInit()
-
-	port := global.Config.Server.Port
-	r.Run(":" + strconv.Itoa(port))
+	return r
 }

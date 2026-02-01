@@ -15,8 +15,20 @@ func NewUserController(userService services.IUserService) *UserController {
 	}
 }
 
+// GetUser godoc
+// @Summary      Get user information
+// @Description  Retrieve user details by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "User ID"
+// @Success      200  {object}  object{userID=string}  "User information"
+// @Failure      400  {object}  object{error=string}   "Bad request"
+// @Failure      404  {object}  object{error=string}   "User not found"
+// @Router       /users/{id} [get]
 func (uc *UserController) GetUser(c *gin.Context) {
-	userId := uc.userService.GetUserName("123")
+	userId := c.Param("id")
+	// userId := uc.userService.GetUserName("123")
 
 	c.JSON(200, gin.H{"userID": userId})
 }

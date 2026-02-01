@@ -1,0 +1,54 @@
+basePath: /api/v1
+host: localhost:8000
+info:
+  contact:
+    email: stylishjoker.epu@gmail.com
+    name: Joker
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Ecommerce API
+  version: 1.0.0
+paths:
+  /sse/stream:
+    get:
+      consumes:
+      - application/json
+      description: Establishes an SSE connection to receive real-time events for a
+        specific user
+      parameters:
+      - description: User ID (defaults to 'anonymous' if not provided)
+        in: query
+        name: user_id
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: 'SSE connection established. Events will be streamed in the
+            format: id, event, data'
+          headers:
+            Cache-Control:
+              description: no-cache
+              type: string
+            Connection:
+              description: keep-alive
+              type: string
+            Content-Type:
+              description: text/event-stream
+              type: string
+            Transfer-Encoding:
+              description: chunked
+              type: string
+            X-Accel-Buffering:
+              description: "no"
+              type: string
+          schema:
+            type: object
+      summary: Stream Server-Sent Events
+      tags:
+      - SSE
+swagger: "2.0"

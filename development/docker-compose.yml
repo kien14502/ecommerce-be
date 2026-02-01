@@ -1,0 +1,206 @@
+# ==============================================================================
+# DOCKER COMPOSE - MYSQL + REDIS + KAFKA + DEBEZIUM
+# ==============================================================================
+
+version: "3.8"
+
+services:
+  # ============================================================================
+  # ZOOKEEPER - Kafka dependency
+  # ============================================================================
+  zookeeper:
+    image: quay.io/debezium/zookeeper:2.7
+    container_name: ecommerce-zookeeper
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # KAFKA - Message broker
+  # ============================================================================
+  kafka:
+    image: quay.io/debezium/kafka:2.7
+    container_name: ecommerce-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    depends_on:
+      - zookeeper
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # KAFKA UI
+  # ============================================================================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka-ui
+    ports:
+      - "8001:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - ecommerce-network
+  # ============================================================================
+  # MYSQL - Primary database
+  # ============================================================================
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root12345
+      MYSQL_DATABASE: ecommerce_db
+      MYSQL_USER: ecommerce_user
+      MYSQL_PASSWORD: ecommerce_pass
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - ./backups:/backups
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+      - --max-connections=200
+      - --max-allowed-packet=64M
+      # Debezium requirements
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --binlog-row-image=FULL
+      - --expire-logs-days=10
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot12345"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ecommerce-network
+
+  # ============================================================================
+  # REDIS - Caching and session store
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce-network
+
+  # ============================================================================
+  # REDIS COMMANDER - Redis web UI (Optional)
+  # ============================================================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: ecommerce-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:ecommerce-redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - ecommerce-network
+
+  # ============================================================================
+  # DEBEZIUM CONNECT - CDC connector
+  # ============================================================================
+  connect:
+    image: quay.io/debezium/connect:2.7
+    container_name: ecommerce-connect
+    ports:
+      - "8083:8083"
+    environment:
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # ============================================================================
+  # PHPMYADMIN - MySQL web UI
+  # ============================================================================
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: ecommerce-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root12345
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "800:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+  # ============================================================================
+  # debezium connect
+  # ============================================================================
+  connect-bootstrap:
+    image: curlimages/curl:8.5.0
+    container_name: debezium-bootstrap
+    depends_on:
+      - connect
+    volumes:
+      - ./scripts:/scripts:ro
+    command: ["sh", "/scripts/register-mysql.sh"]
+    networks:
+      - ecommerce-network
+    restart: "no"
+
+# ==============================================================================
+# VOLUMES
+# ==============================================================================
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ==============================================================================
+# NETWORKS
+# ==============================================================================
+networks:
+  ecommerce-network:
+    driver: bridge
