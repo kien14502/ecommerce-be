@@ -1,4 +1,12 @@
 basePath: /api/1.0.0
+definitions:
+  models.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
 host: localhost:8000
 info:
   contact:
@@ -51,6 +59,36 @@ paths:
       summary: Stream Server-Sent Events
       tags:
       - SSE
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: API cho phép người dùng đăng ký tài khoản bằng Email và Password.
+      parameters:
+      - description: Thông tin đăng ký (Email, Password)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trả về message thành công
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Lỗi dữ liệu đầu vào không hợp lệ
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Đăng ký người dùng mới
+      tags:
+      - User
   /users/{id}:
     get:
       consumes:

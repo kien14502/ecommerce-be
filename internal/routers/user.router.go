@@ -9,8 +9,9 @@ func UserRouter(rg *gin.RouterGroup) {
 
 	userController, _ := wire.InitUserRouterHandler()
 	//router
-	users := rg.Group("/users")
+	users := rg.Group("/user")
 	{
 		users.GET(":id", userController.GetUser)
+		users.POST("register", userController.Register)
 	}
 }

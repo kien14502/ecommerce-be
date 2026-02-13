@@ -7,8 +7,9 @@ import (
 func Run() *gin.Engine {
 	LoadConfigInit()
 	LoggerInit()
-	MySqlInit()
+	MySqlInitc()
 	RedisInit()
+	InitKafka()
 	r := RouterInit()
 	return r
 }

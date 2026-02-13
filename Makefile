@@ -12,6 +12,10 @@ DOCKER_PRODUCT := docker-prod.compose.yml
 DOCKER_DEV := docker-compose.yml
 DOCKER_TEST := docker-test.compose.yml
 
+GOOSE_DBSTRING ?= "root:root12345@tcp(127.0.0.1:3306)/ecommerce_db" 
+GOOSE_MIGRATION_DIR ?= sql/schema
+GOOSE_DRIVER = mysql
+
 build: ## Build the application
 	@echo "Building $(BINARY_NAME)..."
 	mkdir -p bin
@@ -47,8 +51,15 @@ wire:
 	wire ./internal/wire
 
 swag:
-	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers
+	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models
 
-.PHONY: build run run-dev run-prod docker-dev docker-prod wire
+up-se:
+	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) up
+down-se:
+	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) down
+reset-se:
+	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) reset
+
+.PHONY: build run run-dev run-prod docker-dev docker-prod wire up-se down-se reset-se
 .PHONY: air
 

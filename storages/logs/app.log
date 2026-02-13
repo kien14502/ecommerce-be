@@ -82,3 +82,87 @@
 {"level":"INFO","time":"2026-02-02T00:53:17.505+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
 {"level":"INFO","time":"2026-02-02T00:53:17.592+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
 {"level":"INFO","time":"2026-02-02T00:53:17.592+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-02T23:42:04.844+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-02T23:42:04.961+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-02T23:42:04.964+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-02T23:57:53.341+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-02T23:57:53.440+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-02T23:57:53.442+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-02T23:59:39.204+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-02T23:59:39.289+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-02T23:59:39.290+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:02:30.542+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:02:30.628+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:02:30.629+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:05:02.590+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:05:02.678+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:05:02.679+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:05:08.080+0700","caller":"services/user.service.go:41","msg":"user not found"}
+{"level":"INFO","time":"2026-02-03T00:05:52.309+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:05:52.400+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:05:52.401+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:26:23.610+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:26:23.892+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:26:23.893+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:56:11.462+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:56:11.560+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:56:11.561+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-03T00:56:51.083+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-03T00:56:51.167+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-03T00:56:51.170+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T22:58:21.835+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T22:58:22.018+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T22:58:22.019+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:03:12.880+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:03:13.011+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:03:13.012+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:06:32.998+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:06:33.096+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:06:33.096+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:09:04.902+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:09:04.998+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:09:04.999+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:11:52.827+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:11:52.908+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:11:52.909+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:14:16.110+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:14:16.190+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:14:16.190+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:15:10.954+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:15:11.045+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:15:11.045+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:15:31.929+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:15:32.020+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:15:32.021+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-04T23:33:23.834+0700","caller":"initialize/mysql.go:37","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-04T23:33:23.921+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-04T23:33:23.922+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"ERROR","time":"2026-02-05T00:00:09.699+0700","caller":"initialize/mysqlc.go:13","msg":"Failed to connect to database","error":"sql: unknown driver \"mysql\" (forgotten import?)","stacktrace":"github.com/kien14502/ecommerce-be/internal/initialize.checkErrPanic\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/mysqlc.go:13\ngithub.com/kien14502/ecommerce-be/internal/initialize.MySqlInitc\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/mysqlc.go:23\ngithub.com/kien14502/ecommerce-be/internal/initialize.Run\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/run.go:10\nmain.main\n\t/Users/kien/workspace/personal/ecommerce-be/cmd/main.go:30\nruntime.main\n\t/opt/homebrew/Cellar/go/1.25.6/libexec/src/runtime/proc.go:285"}
+{"level":"ERROR","time":"2026-02-05T00:01:00.691+0700","caller":"initialize/mysqlc.go:13","msg":"Failed to connect to database","error":"sql: unknown driver \"mysql\" (forgotten import?)","stacktrace":"github.com/kien14502/ecommerce-be/internal/initialize.checkErrPanic\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/mysqlc.go:13\ngithub.com/kien14502/ecommerce-be/internal/initialize.MySqlInitc\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/mysqlc.go:23\ngithub.com/kien14502/ecommerce-be/internal/initialize.Run\n\t/Users/kien/workspace/personal/ecommerce-be/internal/initialize/run.go:10\nmain.main\n\t/Users/kien/workspace/personal/ecommerce-be/cmd/main.go:30\nruntime.main\n\t/opt/homebrew/Cellar/go/1.25.6/libexec/src/runtime/proc.go:285"}
+{"level":"INFO","time":"2026-02-05T00:02:55.814+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-05T00:02:55.837+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-05T00:02:55.839+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T11:36:28.523+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T11:36:28.558+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T11:36:28.561+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T13:23:09.475+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T13:23:09.494+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T13:23:09.495+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T13:23:55.694+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T13:23:55.713+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T13:23:55.714+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T13:43:01.913+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T13:43:01.932+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T13:43:01.933+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T13:50:45.092+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T13:50:45.110+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T13:50:45.111+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T14:13:50.778+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T14:13:50.795+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T14:13:50.796+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-07T14:28:11.348+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-07T14:28:11.372+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-07T14:28:11.373+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}
+{"level":"INFO","time":"2026-02-10T23:19:10.064+0700","caller":"initialize/mysqlc.go:25","msg":"Connect my sql successfully"}
+{"level":"INFO","time":"2026-02-10T23:19:10.080+0700","caller":"initialize/redis.go:30","msg":"Redis connected successfully"}
+{"level":"INFO","time":"2026-02-10T23:19:10.081+0700","caller":"initialize/redis.go:45","msg":"Redis key value","key":"value"}

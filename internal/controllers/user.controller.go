@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/kien14502/ecommerce-be/internal/dto"
 	"github.com/kien14502/ecommerce-be/internal/services"
+	"github.com/kien14502/ecommerce-be/pkg/response"
 )
 
 type UserController struct {
@@ -31,4 +35,27 @@ func (uc *UserController) GetUser(c *gin.Context) {
 	// userId := uc.userService.GetUserName("123")
 
 	c.JSON(200, gin.H{"userID": userId})
+}
+
+// Register godoc
+// @Summary      Đăng ký người dùng mới
+// @Description  API cho phép người dùng đăng ký tài khoản bằng Email và Password.
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        request body      models.RegisterRequest  true  "Thông tin đăng ký (Email, Password)"
+// @Success      200     {object}  map[string]string       "Trả về message thành công"
+// @Failure      400     {object}  map[string]string       "Lỗi dữ liệu đầu vào không hợp lệ"
+// @Router       /user/register [post]
+func (uc *UserController) Register(c *gin.Context) {
+	var req dto.RegisterRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	status := uc.userService.Register(req.Email, req.Password)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": response.GetMessage(status),
+	})
 }
