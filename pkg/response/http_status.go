@@ -1,29 +1,37 @@
 package response
 
 const (
-	ErrCodeSuccess             = 2000
-	ErrCodeBadRequest          = 400
-	ErrCodeUnauthorized        = 401
-	ErrCodeForbidden           = 403
-	ErrCodeNotFound            = 404
-	ErrCodeInternalServerError = 500
-	ErrInvalidToken            = 498
-	ErrUserExisted             = 1001
-	ErrInvalidOTP              = 1002
-	ErrSendEmailOTP            = 1003
+	UnknownCode              = 500
+	UnknownReason            = ""
+	SupportPackageIsVersion1 = true
+	SuccessCode              = 200
+)
+
+const (
+	ErrBadRequest         = 400
+	ErrUnauthorized       = 401
+	ErrForbidden          = 403
+	ErrNotFound           = 404
+	ErrConflict           = 409
+	ErrTooManyRequest     = 429
+	ErrClientClosed       = 499
+	ErrInternalServer     = 500
+	ErrServiceUnavailable = 503
+	ErrGatewayTimeOut     = 504
 )
 
 var msg = map[int]string{
-	ErrCodeBadRequest:          "Bad Request",
-	ErrCodeUnauthorized:        "Unauthorized",
-	ErrCodeForbidden:           "Forbidden",
-	ErrCodeNotFound:            "Not Found",
-	ErrCodeInternalServerError: "Internal Server Error",
-	ErrInvalidToken:            "Invalid Token",
-	ErrUserExisted:             "User existed",
-	ErrInvalidOTP:              "Invalid OTP",
-	ErrSendEmailOTP:            "Send email failed",
-	ErrCodeSuccess:             "Success",
+	// HTTP errors
+	ErrBadRequest:         "Bad Request",
+	ErrUnauthorized:       "Unauthorized",
+	ErrForbidden:          "Forbidden",
+	ErrNotFound:           "Not Found",
+	ErrConflict:           "Conflict",
+	ErrTooManyRequest:     "Too Many Requests",
+	ErrClientClosed:       "Client Closed Request",
+	ErrInternalServer:     "Internal Server Error",
+	ErrServiceUnavailable: "Service Unavailable",
+	ErrGatewayTimeOut:     "Gateway Timeout",
 }
 
 func GetMessage(code int) string {

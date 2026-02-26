@@ -29,7 +29,6 @@ import (
 func main() {
 	r := initialize.Run()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	port := global.Config.Server.Port
 	r.Run(":" + strconv.Itoa(port))
 }

@@ -9,7 +9,6 @@ done
 
 echo "✅ Kafka Connect is ready"
 
-# Check if connector already exists
 if curl -sf http://connect:8083/connectors/inventory-connector >/dev/null; then
   echo "ℹ️  Connector already exists, skipping registration"
   exit 0

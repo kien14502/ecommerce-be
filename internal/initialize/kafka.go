@@ -4,21 +4,31 @@ import (
 	"log"
 
 	"github.com/kien14502/ecommerce-be/global"
-	"github.com/segmentio/kafka-go"
+	"github.com/kien14502/ecommerce-be/pkg/kafka"
 )
 
-var kafkaProducer *kafka.Writer
+const (
+	TopicOTP               = "otp-auth-topic"
+	TopicEmailNotification = "email-notification-topic"
+	TopicOrderCreated      = "order-created-topic"
+	TopicOrderPaid         = "order-paid-topic"
+	TopicOrderShipped      = "order-shipped-topic"
+	TopicOrderCancelled    = "order-cancelled-topic"
+	TopicPaymentSuccess    = "payment-success-topic"
+	TopicPaymentFailed     = "payment-failed-topic"
+	TopicInventoryUpdated  = "inventory-updated-topic"
+	TopicUserRegistered    = "user-registered-topic"
+)
 
 func InitKafka() {
-	global.Kafka = &kafka.Writer{
-		Addr:     kafka.TCP("localhost:19092"),
-		Topic:    "otp-auth-topic",
-		Balancer: &kafka.LeastBytes{},
-	}
+	kafkaHost := global.Config.Kafka.Host
+	brokers := []string{kafkaHost}
+	global.KafkaManager = kafka.NewKafkaManager(brokers)
+	log.Println("Kafka manager initialized")
 }
 
 func CloseKafka() {
-	if err := global.Kafka.Close(); err != nil {
-		log.Fatalf("Failed to close kafka producer: %v", err)
+	if err := global.KafkaManager.Close(); err != nil {
+		log.Printf("Failed to close kafka manager: %v", err)
 	}
 }

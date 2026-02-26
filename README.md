@@ -55,3 +55,7 @@ docker run -it --rm --name connect -p 8083:8083 -e GROUP_ID=1 -e CONFIG_STORAGE_
 
     - Create table: goose -dir sql/schema create ${TABLE_NAME} sql
     - Generate: sqlc generate
+
+# NOTE
+
+- Contexts pass through function, not live in structs

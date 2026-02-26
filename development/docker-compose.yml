@@ -188,6 +188,20 @@ services:
     networks:
       - ecommerce-network
     restart: "no"
+  # ============================================================================
+  # KAFKA - Message broker
+  # ============================================================================
+  # Run with docker stack deploy -c dozzle-stack.yml <name>
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: ecommerce-dozzle
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ecommerce-network
 
 # ==============================================================================
 # VOLUMES
@@ -196,6 +210,8 @@ volumes:
   mysql_data:
     driver: local
   redis_data:
+    driver: local
+  dozzle:
     driver: local
 
 # ==============================================================================

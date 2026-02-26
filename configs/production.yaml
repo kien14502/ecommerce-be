@@ -1,0 +1,40 @@
+server:
+  port: 8000
+  cors: ["http://localhost:5173", "http://localhost:3000"]
+  version: 1.0.0
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: root12345
+  db_name: ecommerce_db
+  ssl_mode: disable
+  max_open_conns: 100
+  max_idle_conns: 10
+  conn_max_lifetime: 3600
+logger:
+  level: debug
+  file_log_path: ./storages/logs/app.log
+  max_size: 100
+  max_backups: 7
+  max_age: 30
+  compress: true
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+smtp:
+  host: smtp.gmail.com
+  port: 465
+  user: phankien.epu@gmail.com
+  pass: hqswzrpcvadjfoxt
+  secure: true
+kafka:
+  host: localhost:19092
+jwt:
+  access_key:
+  refresh_key: 123
+  access_exp: 5
+  refresh_exp: 24

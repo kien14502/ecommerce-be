@@ -31,3 +31,5 @@ smtp:
   user: phankien.epu@gmail.com
   pass: hqswzrpcvadjfoxt
   secure: true
+kafka:
+  host: localhost:19092

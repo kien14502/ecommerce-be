@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"sync"
@@ -15,7 +16,7 @@ type IUserRepository interface {
 	FindAll() []*models.User
 	GetUserByEmail(email string) (*models.User, error)
 	Create(user *models.User) error
-	IsUserExisted(email string) (bool, error)
+	IsUserExisted(ctx context.Context, email string) (bool, error)
 }
 
 type userRepositoryType struct {
@@ -44,7 +45,7 @@ func (u *userRepositoryType) GetUserByEmail(email string) (*models.User, error) 
 }
 
 // IsUserExisted implements [IUserRepository].
-func (u *userRepositoryType) IsUserExisted(email string) (bool, error) {
+func (u *userRepositoryType) IsUserExisted(ctx context.Context, email string) (bool, error) {
 	emailNullString := sql.NullString{
 		String: email,
 		Valid:  false,

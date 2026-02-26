@@ -35,3 +35,15 @@ type PreGoAccUser9999 struct {
 	// Record update time
 	UpdatedAt sql.NullTime
 }
+
+type PreGoAccUserBase9999 struct {
+	UserID         int32
+	UserAccount    string
+	UserPassword   string
+	UserSalt       string
+	UserLoginTime  sql.NullTime
+	UserLogoutTime sql.NullTime
+	UserLoginIp    sql.NullString
+	UserCreatedAt  sql.NullTime
+	UserUpdatedAt  sql.NullTime
+}

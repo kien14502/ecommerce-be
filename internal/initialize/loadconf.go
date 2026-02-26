@@ -4,12 +4,15 @@ import (
 	"log"
 
 	"github.com/kien14502/ecommerce-be/global"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 func LoadConfigInit() {
+	mode := pflag.StringP("server.mode", "e", "local", "Server mode (local/development/production)")
+	pflag.Parse()
 	v := viper.New()
-	v.SetConfigName("local")
+	v.SetConfigName(*mode)
 	v.SetConfigType("yaml")
 	v.AddConfigPath("./configs")
 

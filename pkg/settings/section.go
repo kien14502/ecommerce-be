@@ -6,6 +6,8 @@ type Config struct {
 	Logger LoggerSetting `mapstructure:"logger"`
 	Redis  RedisSetting  `mapstructure:"redis"`
 	Smtp   SMTPSetting   `mapstructure:"smtp"`
+	Kafka  KafkaSetting  `mapstructure:"kafka"`
+	Jwt    JwtSetting    `mapstructure:"jwt"`
 }
 
 type MySqlSetting struct {
@@ -49,4 +51,15 @@ type SMTPSetting struct {
 	User   string `mapstructure:"user"`
 	Pass   string `mapstructure:"pass"`
 	Secure bool   `mapstructure:"secure"`
+}
+
+type KafkaSetting struct {
+	Host string `mapstructure:"host"`
+}
+
+type JwtSetting struct {
+	AccessKey  string `mapstructure:"access_key"`
+	RefreshKey string `mapstructure:"refresh_key"`
+	AccessExp  string `mapstructure:"access_exp"`
+	RefreshExp string `mapstructure:"refresh_exp"`
 }
