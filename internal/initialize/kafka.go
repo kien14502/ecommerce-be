@@ -1,11 +1,6 @@
 package initialize
 
-import (
-	"log"
-
-	"github.com/kien14502/ecommerce-be/global"
-	"github.com/kien14502/ecommerce-be/pkg/kafka"
-)
+import "github.com/segmentio/kafka-go"
 
 const (
 	TopicOTP               = "otp-auth-topic"
@@ -20,15 +15,12 @@ const (
 	TopicUserRegistered    = "user-registered-topic"
 )
 
+var KafkaProducer *kafka.Writer
+
 func InitKafka() {
-	kafkaHost := global.Config.Kafka.Host
-	brokers := []string{kafkaHost}
-	global.KafkaManager = kafka.NewKafkaManager(brokers)
-	log.Println("Kafka manager initialized")
+
 }
 
 func CloseKafka() {
-	if err := global.KafkaManager.Close(); err != nil {
-		log.Printf("Failed to close kafka manager: %v", err)
-	}
+
 }
