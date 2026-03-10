@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kien14502/ecommerce-be/internal/dto"
+	"github.com/kien14502/ecommerce-be/internal/models"
 	"github.com/kien14502/ecommerce-be/internal/services"
 	"github.com/kien14502/ecommerce-be/pkg/response"
 )
@@ -43,7 +44,7 @@ func (uc *UserController) GetUser(c *gin.Context) {
 // @Tags         User
 // @Accept       json
 // @Produce      json
-// @Param        request body      models.RegisterRequest  true  "Thông tin đăng ký (Email, Password)"
+// @Param        request body      dto.RegisterRequest  true  "Thông tin đăng ký (Email, Password)"
 // @Success      200     {object}  map[string]string       "Trả về message thành công"
 // @Failure      400     {object}  map[string]string       "Lỗi dữ liệu đầu vào không hợp lệ"
 // @Router       /user/register [post]
@@ -51,16 +52,16 @@ func (uc *UserController) Register(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	var req dto.RegisterRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.ErrorResponse(c, response.ErrBadRequest, err.Error())
+	var in models.RegisterInput
+	if err := c.ShouldBindJSON(&in); err != nil {
+		response.ErrorResponse(c, http.StatusBadRequest, response.ErrInvalidParam)
 	}
 
-	status, err := uc.userService.Register(ctx, req.Email, req.Password)
+	status, err := uc.userService.Register(ctx, &in)
 
 	if err != nil {
-		response.ErrorResponse(c, status, err.Error())
+		response.ErrorResponse(c, http.StatusBadRequest, status)
 	}
 
-	response.SuccessResponse(c, status, "Register successful", nil)
+	response.SuccessResponse(c, http.StatusOK, "Register successful", nil)
 }

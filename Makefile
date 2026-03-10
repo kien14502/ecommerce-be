@@ -26,9 +26,8 @@ run: ## Run the application
 	@echo "Running $(BINARY_NAME)..."
 	$(GO_CMD) run $(ROOT_GO)
 
-run-dev: ## Run the application in development mode
-	@echo "Running $(BINARY_NAME) in development mode..."
-	$(GO_CMD) run $(ROOT_GO) -e development
+run-dev:
+	air -c .air.toml
 
 run-prod: ## Run the application in production mode
 	@echo "Running $(BINARY_NAME) in production mode..."
@@ -51,7 +50,7 @@ wire:
 	wire ./internal/wire
 
 swag:
-	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models
+	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models,./internal/dto
 
 up-se:
 	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) up

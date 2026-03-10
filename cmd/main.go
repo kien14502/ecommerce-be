@@ -1,7 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	_ "github.com/kien14502/ecommerce-be/docs" // source swagger docs
 	"github.com/kien14502/ecommerce-be/global"
@@ -29,6 +32,22 @@ import (
 func main() {
 	r := initialize.Run()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	port := global.Config.Server.Port
-	r.Run(":" + strconv.Itoa(port))
+
+	// ← chạy server trong goroutine để không block
+	go func() {
+		if err := r.Run(":" + strconv.Itoa(port)); err != nil {
+			global.Logger.Error("server error: " + err.Error())
+		}
+	}()
+
+	// Block chờ signal shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	// Graceful shutdown
+	global.Logger.Info("shutting down...")
+	global.KafkaProducer.Close()
 }

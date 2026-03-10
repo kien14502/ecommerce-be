@@ -6,44 +6,167 @@ package database
 
 import (
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
+	"time"
 )
 
-// User Account Table
-type PreGoAccUser9999 struct {
-	// User ID
-	UserID uint64
-	// User account
-	UserAccount string
-	// User nickname
-	UserNickname sql.NullString
-	// User avatar
-	UserAvatar sql.NullString
-	// User state: 0-Locked, 1-Activated, 2-Not Activated
-	UserState uint8
-	// Mobile phone number
-	UserMobile sql.NullString
-	// User gender: 0-Secret, 1-Male, 2-Female
-	UserGender sql.NullInt16
-	// User birthday
-	UserBirthday sql.NullTime
-	// User email address
-	UserEmail sql.NullString
-	// Authentication status: 0-Not Authenticated, 1-Pending, 2-Authenticated, 3-Failed
-	UserIsAuthentication uint8
-	// Record creation time
-	CreatedAt sql.NullTime
-	// Record update time
-	UpdatedAt sql.NullTime
+type OtpVerificationsPurpose string
+
+const (
+	OtpVerificationsPurposeRegister      OtpVerificationsPurpose = "register"
+	OtpVerificationsPurposeLogin         OtpVerificationsPurpose = "login"
+	OtpVerificationsPurposeResetPassword OtpVerificationsPurpose = "reset_password"
+	OtpVerificationsPurposeVerifyEmail   OtpVerificationsPurpose = "verify_email"
+)
+
+func (e *OtpVerificationsPurpose) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = OtpVerificationsPurpose(s)
+	case string:
+		*e = OtpVerificationsPurpose(s)
+	default:
+		return fmt.Errorf("unsupported scan type for OtpVerificationsPurpose: %T", src)
+	}
+	return nil
 }
 
-type PreGoAccUserBase9999 struct {
-	UserID         int32
-	UserAccount    string
-	UserPassword   string
-	UserSalt       string
-	UserLoginTime  sql.NullTime
-	UserLogoutTime sql.NullTime
-	UserLoginIp    sql.NullString
-	UserCreatedAt  sql.NullTime
-	UserUpdatedAt  sql.NullTime
+type NullOtpVerificationsPurpose struct {
+	OtpVerificationsPurpose OtpVerificationsPurpose
+	Valid                   bool // Valid is true if OtpVerificationsPurpose is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullOtpVerificationsPurpose) Scan(value interface{}) error {
+	if value == nil {
+		ns.OtpVerificationsPurpose, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.OtpVerificationsPurpose.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullOtpVerificationsPurpose) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.OtpVerificationsPurpose), nil
+}
+
+type Comment struct {
+	ID        string
+	PostID    string
+	UserID    string
+	ParentID  sql.NullString
+	Content   sql.NullString
+	CreatedAt sql.NullTime
+}
+
+type Conversation struct {
+	ID        string
+	CreatedAt sql.NullTime
+}
+
+type ConversationMember struct {
+	ConversationID string
+	UserID         string
+	JoinedAt       sql.NullTime
+}
+
+type Follow struct {
+	FollowerID  string
+	FollowingID string
+	CreatedAt   sql.NullTime
+}
+
+type Message struct {
+	ID             string
+	ConversationID string
+	SenderID       string
+	Content        sql.NullString
+	CreatedAt      sql.NullTime
+}
+
+type Notification struct {
+	ID          string
+	UserID      string
+	Type        sql.NullString
+	ReferenceID sql.NullString
+	IsRead      sql.NullBool
+	CreatedAt   sql.NullTime
+}
+
+type OauthAccount struct {
+	ID             string
+	UserID         string
+	Provider       string
+	ProviderUserID string
+	CreatedAt      sql.NullTime
+}
+
+type OtpVerification struct {
+	ID        string
+	Email     string
+	OtpHash   string
+	Purpose   NullOtpVerificationsPurpose
+	ExpiresAt time.Time
+	CreatedAt sql.NullTime
+}
+
+type Post struct {
+	ID         string
+	UserID     string
+	Content    sql.NullString
+	Visibility sql.NullString
+	CreatedAt  sql.NullTime
+}
+
+type PostMedium struct {
+	ID        string
+	PostID    string
+	MediaUrl  sql.NullString
+	MediaType sql.NullString
+	CreatedAt sql.NullTime
+}
+
+type Reaction struct {
+	ID           string
+	UserID       sql.NullString
+	PostID       sql.NullString
+	ReactionType sql.NullString
+	CreatedAt    sql.NullTime
+}
+
+type User struct {
+	ID              string
+	Email           sql.NullString
+	PasswordHash    sql.NullString
+	Username        sql.NullString
+	FullName        sql.NullString
+	AvatarUrl       sql.NullString
+	Bio             sql.NullString
+	IsEmailVerified sql.NullBool
+	CreatedAt       sql.NullTime
+}
+
+type UserDevice struct {
+	ID         string
+	UserID     string
+	DeviceName sql.NullString
+	DeviceType sql.NullString
+	UserAgent  sql.NullString
+	IpAddress  sql.NullString
+	LastActive sql.NullTime
+	CreatedAt  sql.NullTime
+}
+
+type UserSession struct {
+	ID               string
+	UserID           string
+	DeviceID         string
+	RefreshTokenHash string
+	ExpiresAt        time.Time
+	CreatedAt        sql.NullTime
 }

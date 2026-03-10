@@ -32,7 +32,7 @@ smtp:
   pass: hqswzrpcvadjfoxt
   secure: true
 kafka:
-  host: localhost:19092
+  host: localhost:9092
 jwt:
   access_key:
   refresh_key: 123

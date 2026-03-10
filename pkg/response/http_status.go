@@ -1,40 +1,36 @@
 package response
 
+// Err code
 const (
-	UnknownCode              = 500
-	UnknownReason            = ""
-	SupportPackageIsVersion1 = true
-	SuccessCode              = 200
+	// Common
+	ErrInternalServer = "system"
+	ErrInvalidParam   = "system"
+
+	// Authentication code
+	ErrOTPExisted     = "au0001"
+	ErrInvalidEmail   = "au0002"
+	ErrUserExisted    = "au0003"
+	ErrRegisterFailed = "au0004"
+
+	// Kafka
+	ErrSendTopicFailed = "kaf0001"
 )
 
+// Success code
 const (
-	ErrBadRequest         = 400
-	ErrUnauthorized       = 401
-	ErrForbidden          = 403
-	ErrNotFound           = 404
-	ErrConflict           = 409
-	ErrTooManyRequest     = 429
-	ErrClientClosed       = 499
-	ErrInternalServer     = 500
-	ErrServiceUnavailable = 503
-	ErrGatewayTimeOut     = 504
+	RegisterSuccess = "Register successful. Check email to get verify code!!!"
 )
 
-var msg = map[int]string{
-	// HTTP errors
-	ErrBadRequest:         "Bad Request",
-	ErrUnauthorized:       "Unauthorized",
-	ErrForbidden:          "Forbidden",
-	ErrNotFound:           "Not Found",
-	ErrConflict:           "Conflict",
-	ErrTooManyRequest:     "Too Many Requests",
-	ErrClientClosed:       "Client Closed Request",
-	ErrInternalServer:     "Internal Server Error",
-	ErrServiceUnavailable: "Service Unavailable",
-	ErrGatewayTimeOut:     "Gateway Timeout",
+var msg = map[string]string{
+	ErrOTPExisted:      "Otp already exists",
+	ErrInvalidEmail:    "Invalid OTP",
+	ErrUserExisted:     "User existed",
+	ErrSendTopicFailed: "Failed to send kafka message",
+	ErrInvalidParam:    "InvalidParam",
+	ErrRegisterFailed:  "Register failed",
 }
 
-func GetMessage(code int) string {
+func GetMessage(code string) string {
 	if message, exists := msg[code]; exists {
 		return message
 	}

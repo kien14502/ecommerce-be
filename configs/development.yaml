@@ -27,9 +27,14 @@ redis:
   pool_size: 10
 smtp:
   host: smtp.gmail.com
-  port: 465
+  port: 587
   user: phankien.epu@gmail.com
   pass: hqswzrpcvadjfoxt
-  secure: true
+  secure: false
 kafka:
-  host: localhost:19092
+  host: localhost:9092
+jwt:
+  access_key:
+  refresh_key: 123
+  access_exp: 5
+  refresh_exp: 24

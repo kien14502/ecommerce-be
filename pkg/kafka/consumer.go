@@ -1,3 +1,4 @@
+// internal/kafka/consumer.go
 package kafka
 
 import (
@@ -5,59 +6,61 @@ import (
 	"encoding/json"
 	"log"
 
-	kafkago "github.com/segmentio/kafka-go"
+	"github.com/IBM/sarama"
+	"github.com/kien14502/ecommerce-be/global"
+	"github.com/kien14502/ecommerce-be/pkg/utils/sendto"
 )
 
-// MessageHandler is the callback invoked for each Kafka message.
-type MessageHandler func(ctx context.Context, event EmailEvent) error
+type OTPConsumerHandler struct{}
 
-// Consumer wraps a kafka-go reader.
-type Consumer struct {
-	reader  *kafkago.Reader
-	handler MessageHandler
+type OTPMessage struct {
+	OTP   int    `json:"otp"`
+	Email string `json:"email"`
 }
 
-// NewConsumer creates a new Kafka consumer for the user.registered topic.
-func NewConsumer(brokers []string, groupID string, handler MessageHandler) *Consumer {
-	r := kafkago.NewReader(kafkago.ReaderConfig{
-		Brokers:  brokers,
-		GroupID:  groupID,
-		Topic:    TopicUserRegistered,
-		MinBytes: 10e3, // 10KB
-		MaxBytes: 10e6, // 10MB
-	})
-	return &Consumer{reader: r, handler: handler}
+func (h OTPConsumerHandler) Setup(_ sarama.ConsumerGroupSession) error   { return nil }
+func (h OTPConsumerHandler) Cleanup(_ sarama.ConsumerGroupSession) error { return nil }
+func (h OTPConsumerHandler) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	for msg := range claim.Messages() {
+		var otpMsg OTPMessage
+		if err := json.Unmarshal(msg.Value, &otpMsg); err != nil {
+			log.Printf("failed to unmarshal otp message: %v", err)
+			session.MarkMessage(msg, "")
+			continue
+		}
+		global.Logger.Info("decode" + otpMsg.Email)
+		data := map[string]interface{}{
+			"name":       otpMsg.Email,
+			"otp":        otpMsg.OTP,
+			"expMinutes": 10,
+		}
+
+		if err := sendto.SendTemplateEmailOTP([]string{otpMsg.Email}, global.Config.Smtp.User, "verify-email.html", data); err != nil {
+			log.Printf("failed to send otp email to %s: %v", otpMsg.Email, err)
+		} else {
+			log.Printf("OTP email sent to %s", otpMsg.Email)
+		}
+
+		session.MarkMessage(msg, "")
+	}
+	return nil
 }
 
-// Start begins consuming messages from Kafka (blocking).
-func (c *Consumer) Start(ctx context.Context) {
-	log.Println("[Kafka Consumer] Starting consumer for topic:", TopicUserRegistered)
+func StartConsumer(brokers []string, groupID string, topics []string, handler sarama.ConsumerGroupHandler) error {
+	config := sarama.NewConfig()
+	config.Version = sarama.V2_6_0_0
+	config.Consumer.Offsets.Initial = sarama.OffsetNewest
+
+	group, err := sarama.NewConsumerGroup(brokers, groupID, config)
+	if err != nil {
+		return err
+	}
+	defer group.Close()
+
+	ctx := context.Background()
 	for {
-		msg, err := c.reader.ReadMessage(ctx)
-		if err != nil {
-			if ctx.Err() != nil {
-				log.Println("[Kafka Consumer] Context cancelled, stopping consumer")
-				return
-			}
-			log.Printf("[Kafka Consumer] Error reading message: %v", err)
-			continue
-		}
-
-		var event EmailEvent
-		if err := json.Unmarshal(msg.Value, &event); err != nil {
-			log.Printf("[Kafka Consumer] Error unmarshalling message: %v", err)
-			continue
-		}
-
-		log.Printf("[Kafka Consumer] Received event for user: %s", event.Email)
-
-		if err := c.handler(ctx, event); err != nil {
-			log.Printf("[Kafka Consumer] Error handling event: %v", err)
+		if err := group.Consume(ctx, topics, handler); err != nil {
+			return err
 		}
 	}
-}
-
-// Close closes the Kafka reader.
-func (c *Consumer) Close() error {
-	return c.reader.Close()
 }

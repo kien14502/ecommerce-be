@@ -45,8 +45,8 @@ func SuccessResponse(c *gin.Context, statusCode int, message string, data interf
 }
 
 // ErrorResponse sends error response
-func ErrorResponse(c *gin.Context, statusCode int, reason string) {
-	errorMsg := reason
+func ErrorResponse(c *gin.Context, statusCode int, resCode string) {
+	errorMsg := GetMessage(resCode)
 	if errorMsg == "" {
 		errorMsg = GetHTTPStatusMessage(statusCode)
 	}

@@ -46,18 +46,14 @@ func (u *userRepositoryType) GetUserByEmail(email string) (*models.User, error) 
 
 // IsUserExisted implements [IUserRepository].
 func (u *userRepositoryType) IsUserExisted(ctx context.Context, email string) (bool, error) {
-	emailNullString := sql.NullString{
-		String: email,
-		Valid:  false,
-	}
-	user, err := u.sqlc.GetUserByEmail(ctx, emailNullString)
+	user, err := u.sqlc.GetUserByEmail(ctx)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
 		return false, err
 	}
-	return user.UserID != 0, nil
+	return user.ID != "", nil
 }
 
 func NewUserRepository() IUserRepository {

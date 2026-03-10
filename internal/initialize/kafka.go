@@ -1,26 +1,27 @@
 package initialize
 
-import "github.com/segmentio/kafka-go"
-
-const (
-	TopicOTP               = "otp-auth-topic"
-	TopicEmailNotification = "email-notification-topic"
-	TopicOrderCreated      = "order-created-topic"
-	TopicOrderPaid         = "order-paid-topic"
-	TopicOrderShipped      = "order-shipped-topic"
-	TopicOrderCancelled    = "order-cancelled-topic"
-	TopicPaymentSuccess    = "payment-success-topic"
-	TopicPaymentFailed     = "payment-failed-topic"
-	TopicInventoryUpdated  = "inventory-updated-topic"
-	TopicUserRegistered    = "user-registered-topic"
+import (
+	"github.com/kien14502/ecommerce-be/consts"
+	"github.com/kien14502/ecommerce-be/global"
+	"github.com/kien14502/ecommerce-be/pkg/kafka"
 )
 
-var KafkaProducer *kafka.Writer
-
 func InitKafka() {
+	brokers := []string{global.Config.Kafka.Host}
 
-}
+	producer, err := kafka.NewProducer(brokers)
+	if err != nil {
+		global.Logger.Error(err.Error())
+		return // ← tránh nil pointer panic
+	}
 
-func CloseKafka() {
+	global.KafkaProducer = producer // ← không defer Close(), producer sống suốt app
+	global.Logger.Info("kafka connected!!!")
 
+	go func() {
+		if err := kafka.StartConsumer(brokers, "my-group", []string{consts.TopicOTP}, kafka.OTPConsumerHandler{}); err != nil {
+			global.Logger.Error(err.Error())
+		}
+	}()
+	// ← bỏ select{}, để main.go quản lý lifecycle
 }

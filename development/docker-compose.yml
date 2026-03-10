@@ -27,9 +27,13 @@ services:
     container_name: ecommerce-kafka
     ports:
       - "9092:9092"
+      - "29092:29092"   # ← thêm port này
     environment:
       ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     depends_on:
       - zookeeper
@@ -46,10 +50,10 @@ services:
     ports:
       - "8001:8080"
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_NAME=ecommerce
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092   # ← đổi từ 9092 thành 29092
     depends_on:
-      - kafka
+      - kafka   # ← sửa tên cho đúng (depends_on dùng service name, không phải container_name)
     networks:
       - ecommerce-network
   # ============================================================================
@@ -143,7 +147,7 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
-      BOOTSTRAP_SERVERS: kafka:9092
+      BOOTSTRAP_SERVERS: kafka:29092
     depends_on:
       kafka:
         condition: service_started
