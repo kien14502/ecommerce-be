@@ -31,11 +31,11 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
 
 const getPost = `-- name: GetPost :one
 SELECT id, user_id, content, visibility, created_at FROM posts
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) GetPost(ctx context.Context) (Post, error) {
-	row := q.db.QueryRowContext(ctx, getPost)
+func (q *Queries) GetPost(ctx context.Context, id string) (Post, error) {
+	row := q.db.QueryRowContext(ctx, getPost, id)
 	var i Post
 	err := row.Scan(
 		&i.ID,
@@ -49,12 +49,12 @@ func (q *Queries) GetPost(ctx context.Context) (Post, error) {
 
 const getUserPosts = `-- name: GetUserPosts :many
 SELECT id, user_id, content, visibility, created_at FROM posts
-WHERE user_id = $1
+WHERE user_id = ?
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetUserPosts(ctx context.Context) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, getUserPosts)
+func (q *Queries) GetUserPosts(ctx context.Context, userID string) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getUserPosts, userID)
 	if err != nil {
 		return nil, err
 	}

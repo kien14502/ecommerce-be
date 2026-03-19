@@ -12,6 +12,8 @@ func UserRouter(rg *gin.RouterGroup) {
 	users := rg.Group("/user")
 	{
 		users.GET(":id", userController.GetUser)
-		users.POST("register", userController.Register)
+		users.POST("/register", userController.Register)
+		users.POST("/verify-otp", userController.VerifyOtp)
+		users.POST("/login", userController.Login)
 	}
 }

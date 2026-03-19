@@ -50,7 +50,7 @@ wire:
 	wire ./internal/wire
 
 swag:
-	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models,./internal/dto
+	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models,./internal/dto,./pkg/response
 
 up-se:
 	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) up

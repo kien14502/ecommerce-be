@@ -8,5 +8,5 @@ INSERT INTO reactions (
 
 -- name: DeleteReaction :exec
 DELETE FROM reactions
-WHERE user_id = $1
-AND post_id = $2;
+WHERE user_id = ?
+AND post_id = ?;

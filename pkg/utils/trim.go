@@ -30,3 +30,35 @@ func TrimSlice(arr []interface{}) []interface{} {
 	}
 	return result
 }
+
+func ParseDevice(userAgent string) (deviceName string, deviceType string) {
+
+	ua := strings.ToLower(userAgent)
+
+	// detect device type
+	if strings.Contains(ua, "mobile") {
+		deviceType = "mobile"
+	} else if strings.Contains(ua, "tablet") {
+		deviceType = "tablet"
+	} else {
+		deviceType = "desktop"
+	}
+
+	// detect OS / device name
+	switch {
+	case strings.Contains(ua, "iphone"):
+		deviceName = "iPhone"
+	case strings.Contains(ua, "android"):
+		deviceName = "Android"
+	case strings.Contains(ua, "windows"):
+		deviceName = "Windows PC"
+	case strings.Contains(ua, "mac os"):
+		deviceName = "Mac"
+	case strings.Contains(ua, "linux"):
+		deviceName = "Linux"
+	default:
+		deviceName = "Unknown"
+	}
+
+	return
+}

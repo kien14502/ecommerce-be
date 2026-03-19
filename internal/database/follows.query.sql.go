@@ -13,22 +13,32 @@ const followUser = `-- name: FollowUser :exec
 INSERT INTO follows (
     follower_id, following_id
 ) VALUES (
-    $1, $2
+    ?,?
 )
 `
 
-func (q *Queries) FollowUser(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, followUser)
+type FollowUserParams struct {
+	FollowerID  string
+	FollowingID string
+}
+
+func (q *Queries) FollowUser(ctx context.Context, arg FollowUserParams) error {
+	_, err := q.db.ExecContext(ctx, followUser, arg.FollowerID, arg.FollowingID)
 	return err
 }
 
 const unfollowUser = `-- name: UnfollowUser :exec
 DELETE FROM follows
-WHERE follower_id = $1
-AND following_id = $2
+WHERE follower_id = ?
+AND following_id = ?
 `
 
-func (q *Queries) UnfollowUser(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, unfollowUser)
+type UnfollowUserParams struct {
+	FollowerID  string
+	FollowingID string
+}
+
+func (q *Queries) UnfollowUser(ctx context.Context, arg UnfollowUserParams) error {
+	_, err := q.db.ExecContext(ctx, unfollowUser, arg.FollowerID, arg.FollowingID)
 	return err
 }

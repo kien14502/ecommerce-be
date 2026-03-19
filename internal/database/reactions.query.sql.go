@@ -38,11 +38,16 @@ func (q *Queries) CreateReaction(ctx context.Context, arg CreateReactionParams) 
 
 const deleteReaction = `-- name: DeleteReaction :exec
 DELETE FROM reactions
-WHERE user_id = $1
-AND post_id = $2
+WHERE user_id = ?
+AND post_id = ?
 `
 
-func (q *Queries) DeleteReaction(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteReaction)
+type DeleteReactionParams struct {
+	UserID sql.NullString
+	PostID sql.NullString
+}
+
+func (q *Queries) DeleteReaction(ctx context.Context, arg DeleteReactionParams) error {
+	_, err := q.db.ExecContext(ctx, deleteReaction, arg.UserID, arg.PostID)
 	return err
 }

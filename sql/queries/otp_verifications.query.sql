@@ -9,11 +9,13 @@ INSERT INTO otp_verifications (
 
 -- name: GetOTP :one
 SELECT * FROM otp_verifications
-WHERE email = $1
-AND purpose = $2
+WHERE email = ?
+AND purpose = ?
 ORDER BY created_at DESC
 LIMIT 1;
 
 -- name: DeleteOTP :exec
+-- name: DeleteOTP :exec
 DELETE FROM otp_verifications
-WHERE id = $1;
+WHERE id = ?
+AND purpose = ?;

@@ -11,7 +11,7 @@ func RouterInit() *gin.Engine {
 	r := gin.Default()
 	version := global.Config.Server.Version
 	api := r.Group("/api/" + version)
-
+	r.Use(middlewares.ErrorHandlerMiddleware())
 	routers.AuthRouter(api)
 
 	privateRouter := api.Group("/")

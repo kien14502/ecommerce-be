@@ -1,14 +1,16 @@
 package controllers
 
 import (
-	"context"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kien14502/ecommerce-be/internal/models"
+	"github.com/google/uuid"
+	"github.com/kien14502/ecommerce-be/global"
+	"github.com/kien14502/ecommerce-be/internal/dto"
 	"github.com/kien14502/ecommerce-be/internal/services"
 	"github.com/kien14502/ecommerce-be/pkg/response"
+	"github.com/kien14502/ecommerce-be/pkg/utils/cookies"
+	"go.uber.org/zap"
 )
 
 type UserController struct {
@@ -39,29 +41,145 @@ func (uc *UserController) GetUser(c *gin.Context) {
 }
 
 // Register godoc
-// @Summary      Đăng ký người dùng mới
-// @Description  API cho phép người dùng đăng ký tài khoản bằng Email và Password.
+// @Summary      Đăng ký người dùng
+// @Description  API cho phép người dùng đăng ký tài khoản bằng email và password.
 // @Tags         User
 // @Accept       json
 // @Produce      json
-// @Param        request body      dto.RegisterRequest  true  "Thông tin đăng ký (Email, Password)"
-// @Success      200     {object}  map[string]string       "Trả về message thành công"
-// @Failure      400     {object}  map[string]string       "Lỗi dữ liệu đầu vào không hợp lệ"
+// @Param        request body dto.RegisterRequest true "Thông tin đăng ký"
+// @Success      200 {object} response.Response "Đăng ký thành công"
+// @Failure      400 {object} response.Response "Dữ liệu đầu vào không hợp lệ"
+// @Failure      409 {object} response.Response "Email hoặc username đã tồn tại"
+// @Failure      500 {object} response.Response "Lỗi hệ thống"
 // @Router       /user/register [post]
 func (uc *UserController) Register(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
-	defer cancel()
+	ctx := c.Request.Context()
 
-	var in models.RegisterInput
+	var in dto.RegisterRequest
 	if err := c.ShouldBindJSON(&in); err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, response.ErrInvalidParam)
+		c.Error(response.ErrInvalidParam)
+		return
 	}
 
-	status, err := uc.userService.Register(ctx, &in)
+	err := uc.userService.Register(ctx, in)
 
 	if err != nil {
-		response.ErrorResponse(c, http.StatusBadRequest, status)
+		global.Logger.Error(
+			"Register request binding failed",
+			zap.Error(err),
+			zap.String("path", c.FullPath()),
+			zap.String("method", c.Request.Method),
+			zap.String("ip", c.ClientIP()),
+		)
+		c.Error(err)
+		return
 	}
 
-	response.SuccessResponse(c, http.StatusOK, "Register successful", nil)
+	c.JSON(http.StatusOK, response.Response{
+		Success: true,
+		Message: "Register successful",
+	})
+
+}
+
+// VerifyOtp godoc
+// @Summary      Xác thực OTP
+// @Description  API dùng để xác thực OTP sau khi đăng ký tài khoản.
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.VerifyOtpRequest true "Thông tin xác thực OTP"
+// @Success      200 {object} response.Response{data=dto.LoginResponse} "Xác thực OTP thành công"
+// @Failure      400 {object} response.Response "OTP không hợp lệ hoặc dữ liệu sai"
+// @Failure      404 {object} response.Response "Không tìm thấy yêu cầu xác thực"
+// @Failure      500 {object} response.Response "Lỗi hệ thống"
+// @Router       /user/verify-otp [post]
+func (uc *UserController) VerifyOtp(c *gin.Context) {
+	ctx := c.Request.Context()
+	var in dto.VerifyOtpRequest
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.Error(response.ErrInvalidParam)
+		return
+	}
+
+	res, err := uc.userService.VerifyOTP(ctx, in)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	cookies.SaveRefreshToken(c.Writer, res.RefreshToken)
+	c.JSON(http.StatusOK, response.Response{
+		Success: true,
+		Message: "Verify successful",
+		Data:    res,
+	})
+}
+
+// VerifyOtp godoc
+// @Summary      Đăng nhập tài khoản
+// @Description  API dùng để xác đăng nhập tài khoản.
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.LoginRequest true "Thông tin đăng nhập"
+// @Success      200 {object} response.Response{data=dto.LoginResponse} "Đăng nhập thành công"
+// @Failure      400 {object} response.Response "Tài khoản hoặc mật khẩu không chính xác"
+// @Failure      404 {object} response.Response "Không tìm thấy yêu cầu xác thực"
+// @Failure      500 {object} response.Response "Lỗi hệ thống"
+// @Router       /user/login [post]
+func (uc *UserController) Login(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	var in dto.LoginRequest
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.Error(response.ErrInvalidParam)
+		return
+	}
+	in.DeviceID = c.GetHeader("X-Device-ID")
+	if in.DeviceID == "" {
+		in.DeviceID = uuid.New().String()
+	}
+	res, err := uc.userService.Login(ctx, in, c.ClientIP(), c.GetHeader("User-Agent"))
+	if err != nil {
+		c.Error(err)
+	}
+
+	cookies.SaveRefreshToken(c.Writer, res.RefreshToken)
+	c.JSON(http.StatusOK, response.Response{
+		Success: true,
+		Message: "Login successful",
+		Data:    res,
+	})
+}
+
+// VerifyOtp godoc
+// @Summary      Refresh Token
+// @Description  API dùng để lấy lại refresh token và access token
+// @Tags         User
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.LoginRequest true "Thông tin đăng nhập"
+// @Success      200 {object} response.Response{data=dto.LoginResponse} "Đăng nhập thành công"
+// @Failure      400 {object} response.Response "Tài khoản hoặc mật khẩu không chính xác"
+// @Failure      404 {object} response.Response "Không tìm thấy yêu cầu xác thực"
+// @Failure      500 {object} response.Response "Lỗi hệ thống"
+// @Router       /user/refresh-token [post]
+func (uc *UserController) RefreshToken(c *gin.Context) {
+	ctx := c.Request.Context()
+	refreshToken, err := cookies.GetRefreshToken(c.Request)
+	if err != nil {
+		c.Error(response.ErrUnauthorized)
+		return
+	}
+	res, err := uc.userService.RefreshToken(ctx, refreshToken)
+	if err != nil {
+		c.Error(response.ErrUnauthorized)
+		return
+	}
+	c.JSON(http.StatusOK, response.Response{
+		Success: true,
+		Message: "Success",
+		Data:    res,
+	})
 }

@@ -37,12 +37,17 @@ func (q *Queries) CreateOAuthAccount(ctx context.Context, arg CreateOAuthAccount
 
 const getOAuthAccount = `-- name: GetOAuthAccount :one
 SELECT id, user_id, provider, provider_user_id, created_at FROM oauth_accounts
-WHERE provider = $1
-AND provider_user_id = $2
+WHERE provider = ?
+AND provider_user_id = ?
 `
 
-func (q *Queries) GetOAuthAccount(ctx context.Context) (OauthAccount, error) {
-	row := q.db.QueryRowContext(ctx, getOAuthAccount)
+type GetOAuthAccountParams struct {
+	Provider       string
+	ProviderUserID string
+}
+
+func (q *Queries) GetOAuthAccount(ctx context.Context, arg GetOAuthAccountParams) (OauthAccount, error) {
+	row := q.db.QueryRowContext(ctx, getOAuthAccount, arg.Provider, arg.ProviderUserID)
 	var i OauthAccount
 	err := row.Scan(
 		&i.ID,

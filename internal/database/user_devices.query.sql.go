@@ -42,16 +42,38 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) erro
 	return err
 }
 
+const getDeviceByID = `-- name: GetDeviceByID :one
+SELECT id, user_id, device_name, device_type, user_agent, ip_address, last_active, created_at
+FROM user_devices
+WHERE id = ?
+`
+
+func (q *Queries) GetDeviceByID(ctx context.Context, id string) (UserDevice, error) {
+	row := q.db.QueryRowContext(ctx, getDeviceByID, id)
+	var i UserDevice
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.DeviceName,
+		&i.DeviceType,
+		&i.UserAgent,
+		&i.IpAddress,
+		&i.LastActive,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listUserDevices = `-- name: ListUserDevices :many
 SELECT d.id, d.user_id, d.device_name, d.device_type, d.user_agent, d.ip_address, d.last_active, d.created_at
 FROM user_devices d
 JOIN user_sessions s
 ON s.device_id = d.id
-WHERE s.user_id = $1
+WHERE s.user_id = ?
 `
 
-func (q *Queries) ListUserDevices(ctx context.Context) ([]UserDevice, error) {
-	rows, err := q.db.QueryContext(ctx, listUserDevices)
+func (q *Queries) ListUserDevices(ctx context.Context, userID string) ([]UserDevice, error) {
+	rows, err := q.db.QueryContext(ctx, listUserDevices, userID)
 	if err != nil {
 		return nil, err
 	}

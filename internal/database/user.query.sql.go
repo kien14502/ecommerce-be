@@ -39,13 +39,26 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_hash, username, full_name, avatar_url, bio, is_email_verified, created_at FROM users
-WHERE email = $1
+const getEmailVerifiedStatus = `-- name: GetEmailVerifiedStatus :one
+SELECT is_email_verified
+FROM users
+WHERE email = ?
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail)
+func (q *Queries) GetEmailVerifiedStatus(ctx context.Context, email sql.NullString) (sql.NullBool, error) {
+	row := q.db.QueryRowContext(ctx, getEmailVerifiedStatus, email)
+	var is_email_verified sql.NullBool
+	err := row.Scan(&is_email_verified)
+	return is_email_verified, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, password_hash, username, full_name, avatar_url, bio, is_email_verified, created_at FROM users
+WHERE email = ?
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -63,11 +76,11 @@ func (q *Queries) GetUserByEmail(ctx context.Context) (User, error) {
 
 const getUserByID = `-- name: GetUserByID :one
 SELECT id, email, password_hash, username, full_name, avatar_url, bio, is_email_verified, created_at FROM users
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) GetUserByID(ctx context.Context) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID)
+func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -81,4 +94,37 @@ func (q *Queries) GetUserByID(ctx context.Context) (User, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, email, password_hash, username, full_name, avatar_url, bio, is_email_verified, created_at From users
+WHERE username = ?
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.Username,
+		&i.FullName,
+		&i.AvatarUrl,
+		&i.Bio,
+		&i.IsEmailVerified,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const markEmailVerified = `-- name: MarkEmailVerified :exec
+UPDATE users
+SET is_email_verified = TRUE
+WHERE email = ?
+`
+
+func (q *Queries) MarkEmailVerified(ctx context.Context, email sql.NullString) error {
+	_, err := q.db.ExecContext(ctx, markEmailVerified, email)
+	return err
 }

@@ -41,32 +41,32 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) er
 
 const deleteAllSessions = `-- name: DeleteAllSessions :exec
 DELETE FROM user_sessions
-WHERE user_id = $1
+WHERE user_id = ?
 `
 
-func (q *Queries) DeleteAllSessions(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteAllSessions)
+func (q *Queries) DeleteAllSessions(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteAllSessions, userID)
 	return err
 }
 
 const deleteSession = `-- name: DeleteSession :exec
 DELETE FROM user_sessions
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) DeleteSession(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteSession)
+func (q *Queries) DeleteSession(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteSession, id)
 	return err
 }
 
 const getSessionByToken = `-- name: GetSessionByToken :one
 SELECT id, user_id, device_id, refresh_token_hash, expires_at, created_at FROM user_sessions
-WHERE refresh_token_hash = $1
+WHERE refresh_token_hash = ?
 AND expires_at > NOW()
 `
 
-func (q *Queries) GetSessionByToken(ctx context.Context) (UserSession, error) {
-	row := q.db.QueryRowContext(ctx, getSessionByToken)
+func (q *Queries) GetSessionByToken(ctx context.Context, refreshTokenHash string) (UserSession, error) {
+	row := q.db.QueryRowContext(ctx, getSessionByToken, refreshTokenHash)
 	var i UserSession
 	err := row.Scan(
 		&i.ID,

@@ -9,13 +9,13 @@ INSERT INTO user_sessions (
 
 -- name: GetSessionByToken :one
 SELECT * FROM user_sessions
-WHERE refresh_token_hash = $1
+WHERE refresh_token_hash = ?
 AND expires_at > NOW();
 
 -- name: DeleteSession :exec
 DELETE FROM user_sessions
-WHERE id = $1;
+WHERE id = ?;
 
 -- name: DeleteAllSessions :exec
 DELETE FROM user_sessions
-WHERE user_id = $1;
+WHERE user_id = ?;

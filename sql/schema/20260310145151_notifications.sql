@@ -7,17 +7,13 @@ CREATE TABLE notifications (
     reference_id CHAR(36),
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_notifications_user (user_id),
+    INDEX idx_notifications_read (user_id, is_read)
 );
-CREATE INDEX idx_notifications_user 
-ON notifications(user_id);
-
-CREATE INDEX idx_notifications_read 
-ON notifications(user_id, is_read);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS `notifications`;
+DROP TABLE IF EXISTS notifications;
 -- +goose StatementEnd

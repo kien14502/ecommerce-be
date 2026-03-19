@@ -9,5 +9,5 @@ INSERT INTO comments (
 
 -- name: GetPostComments :many
 SELECT * FROM comments
-WHERE post_id = $1
+WHERE post_id = ?
 ORDER BY created_at;

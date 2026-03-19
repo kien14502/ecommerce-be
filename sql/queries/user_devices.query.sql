@@ -13,4 +13,9 @@ SELECT d.*
 FROM user_devices d
 JOIN user_sessions s
 ON s.device_id = d.id
-WHERE s.user_id = $1;
+WHERE s.user_id = ?;
+
+-- name: GetDeviceByID :one
+SELECT *
+FROM user_devices
+WHERE id = ?;

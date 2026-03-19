@@ -36,8 +36,9 @@ var (
 
 func InitUserRouterHandler() (*controllers.UserController, error) {
 	iUserRepository := repo.NewUserRepository()
-	iUserAuthRepository := repo.NewUserAuthRepository()
-	iUserService := services.NewUserService(iUserRepository, iUserAuthRepository)
+	iRedisService := services.NewRedisService()
+	iUserVerifyRepository := repo.NewUserVerifyRepository()
+	iUserService := services.NewUserService(iUserRepository, iRedisService, iUserVerifyRepository)
 	userController := controllers.NewUserController(iUserService)
 	return userController, nil
 }

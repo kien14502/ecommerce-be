@@ -9,16 +9,13 @@ CREATE TABLE users (
     avatar_url TEXT,
     bio TEXT,
     is_email_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_users_email (email),
+    INDEX idx_users_username (username)
 );
-CREATE INDEX idx_users_email 
-ON users(email);
-
-CREATE INDEX idx_users_username 
-ON users(username);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS users;
 -- +goose StatementEnd

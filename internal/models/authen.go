@@ -1,6 +1,7 @@
 package models
 
 type RegisterInput struct {
-	Email         string `json:"verify_key"`
-	VerifyPurpose string `json:"verify_purpose"`
+	Email    string `json:"verify_key"`
+	Password string `json:"password"`
+	Username string `json:"username"`
 }

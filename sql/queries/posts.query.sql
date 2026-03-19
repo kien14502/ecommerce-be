@@ -7,9 +7,9 @@ INSERT INTO posts (
 
 -- name: GetPost :one
 SELECT * FROM posts
-WHERE id = $1;
+WHERE id = ?;
 
 -- name: GetUserPosts :many
 SELECT * FROM posts
-WHERE user_id = $1
+WHERE user_id = ?
 ORDER BY created_at DESC;

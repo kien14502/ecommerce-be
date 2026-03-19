@@ -9,14 +9,12 @@ CREATE TABLE user_devices (
     ip_address VARCHAR(50),
     last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_devices_user (user_id)
 );
-CREATE INDEX idx_devices_user 
-ON user_devices(user_id);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS `user_devices`;
+DROP TABLE IF EXISTS user_devices;
 -- +goose StatementEnd

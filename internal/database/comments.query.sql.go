@@ -41,12 +41,12 @@ func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) er
 
 const getPostComments = `-- name: GetPostComments :many
 SELECT id, post_id, user_id, parent_id, content, created_at FROM comments
-WHERE post_id = $1
+WHERE post_id = ?
 ORDER BY created_at
 `
 
-func (q *Queries) GetPostComments(ctx context.Context) ([]Comment, error) {
-	rows, err := q.db.QueryContext(ctx, getPostComments)
+func (q *Queries) GetPostComments(ctx context.Context, postID string) ([]Comment, error) {
+	rows, err := q.db.QueryContext(ctx, getPostComments, postID)
 	if err != nil {
 		return nil, err
 	}

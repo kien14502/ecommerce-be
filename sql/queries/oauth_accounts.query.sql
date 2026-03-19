@@ -8,5 +8,5 @@ INSERT INTO oauth_accounts (
 
 -- name: GetOAuthAccount :one
 SELECT * FROM oauth_accounts
-WHERE provider = $1
-AND provider_user_id = $2;
+WHERE provider = ?
+AND provider_user_id = ?;

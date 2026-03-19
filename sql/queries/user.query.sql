@@ -9,8 +9,22 @@ INSERT INTO users (
 
 -- name: GetUserByEmail :one
 SELECT * FROM users
-WHERE email = $1;
+WHERE email = ?;
 
 -- name: GetUserByID :one
 SELECT * FROM users
-WHERE id = $1;
+WHERE id = ?;
+
+-- name: GetUserByUsername :one
+SELECT * From users
+WHERE username = ?;
+
+-- name: GetEmailVerifiedStatus :one
+SELECT is_email_verified
+FROM users
+WHERE email = ?;
+
+-- name: MarkEmailVerified :exec
+UPDATE users
+SET is_email_verified = TRUE
+WHERE email = ?;

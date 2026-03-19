@@ -1,0 +1,76 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Download dependencies
+      run: go mod download
+
+    - name: Run tests
+      run: go test ./...
+
+    - name: Build binary
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o ecommerce-be cmd/main.go
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ecommerce-be-binary
+        path: ecommerce-be
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ecommerce-be-binary
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          sudo systemctl stop ecommerce-be || true
+          scp -o StrictHostKeyChecking=no ecommerce-be ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/
+          scp -o StrictHostKeyChecking=no scripts/ecommerce-be.service ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/
+          sudo mv /tmp/ecommerce-be /usr/local/bin/ecommerce-be
+          sudo mv /tmp/ecommerce-be.service /etc/systemd/system/
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" | sudo tee /opt/ecommerce-be/.env > /dev/null
+          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" | sudo tee -a /opt/ecommerce-be/.env > /dev/null
+          echo "SMTP_USER=${{ secrets.SMTP_USER }}" | sudo tee -a /opt/ecommerce-be/.env > /dev/null
+          echo "SMTP_PASS=${{ secrets.SMTP_PASS }}" | sudo tee -a /opt/ecommerce-be/.env > /dev/null
+          echo "JWT_ACCESS_KEY=${{ secrets.JWT_ACCESS_KEY }}" | sudo tee -a /opt/ecommerce-be/.env > /dev/null
+          echo "JWT_REFRESH_KEY=${{ secrets.JWT_REFRESH_KEY }}" | sudo tee -a /opt/ecommerce-be/.env > /dev/null
+          # Add more env vars as needed
+          sudo systemctl daemon-reload
+          sudo systemctl enable ecommerce-be
+          sudo systemctl start ecommerce-be

@@ -41,24 +41,35 @@ func (q *Queries) CreateOTP(ctx context.Context, arg CreateOTPParams) error {
 
 const deleteOTP = `-- name: DeleteOTP :exec
 DELETE FROM otp_verifications
-WHERE id = $1
+WHERE id = ?
+AND purpose = ?
 `
 
-func (q *Queries) DeleteOTP(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, deleteOTP)
+type DeleteOTPParams struct {
+	ID      string
+	Purpose NullOtpVerificationsPurpose
+}
+
+func (q *Queries) DeleteOTP(ctx context.Context, arg DeleteOTPParams) error {
+	_, err := q.db.ExecContext(ctx, deleteOTP, arg.ID, arg.Purpose)
 	return err
 }
 
 const getOTP = `-- name: GetOTP :one
 SELECT id, email, otp_hash, purpose, expires_at, created_at FROM otp_verifications
-WHERE email = $1
-AND purpose = $2
+WHERE email = ?
+AND purpose = ?
 ORDER BY created_at DESC
 LIMIT 1
 `
 
-func (q *Queries) GetOTP(ctx context.Context) (OtpVerification, error) {
-	row := q.db.QueryRowContext(ctx, getOTP)
+type GetOTPParams struct {
+	Email   string
+	Purpose NullOtpVerificationsPurpose
+}
+
+func (q *Queries) GetOTP(ctx context.Context, arg GetOTPParams) (OtpVerification, error) {
+	row := q.db.QueryRowContext(ctx, getOTP, arg.Email, arg.Purpose)
 	var i OtpVerification
 	err := row.Scan(
 		&i.ID,
