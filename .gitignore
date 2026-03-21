@@ -79,3 +79,8 @@ vendor/
 scripts/setUp/data_kafka/*
 scripts/setUp/data_monitor/grafana-storage/*
 scripts/setUp/data_monitor/prometheus_data/*
+
+tmp/
+storage/
+logs/
+*.log
