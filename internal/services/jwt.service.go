@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/kien14502/ecommerce-be/global"
 )
 
 type jwtService struct {
@@ -20,7 +21,7 @@ func (j *jwtService) GenerateAccessToken(userID string, deviceID string) (string
 		DeviceID: deviceID,
 		JTI:      jti,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(global.Config.Jwt.AccessExp) * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -37,7 +38,7 @@ func (j *jwtService) GenerateRefreshToken(userID string, deviceID string) (strin
 		DeviceID: deviceID,
 		JTI:      jti,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(global.Config.Jwt.RefreshExp) * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -82,9 +83,9 @@ type IJwtService interface {
 	ParseRefreshToken(tokenStr string) (*Claims, error)
 }
 
-func NewJwtService(accessSecret, refreshSecret string) IJwtService {
+func NewJwtService() IJwtService {
 	return &jwtService{
-		accessSecret:  accessSecret,
-		refreshSecret: refreshSecret,
+		accessSecret:  global.Config.Jwt.AccessKey,
+		refreshSecret: global.Config.Jwt.RefreshKey,
 	}
 }

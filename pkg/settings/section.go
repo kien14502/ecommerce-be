@@ -60,6 +60,6 @@ type KafkaSetting struct {
 type JwtSetting struct {
 	AccessKey  string `mapstructure:"access_key"`
 	RefreshKey string `mapstructure:"refresh_key"`
-	AccessExp  string `mapstructure:"access_exp"`
-	RefreshExp string `mapstructure:"refresh_exp"`
+	AccessExp  int    `mapstructure:"access_exp"`
+	RefreshExp int    `mapstructure:"refresh_exp"`
 }

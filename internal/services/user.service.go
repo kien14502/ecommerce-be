@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/IBM/sarama"
@@ -69,10 +70,11 @@ func (u *userService) RefreshToken(ctx context.Context, refreshToken string) (*d
 // VerifyOTP implements [IUserService].
 func (u *userService) VerifyOTP(ctx context.Context, body dto.VerifyOtpRequest) (*dto.LoginResponse, error) {
 	storedHash, err := u.redisService.GetOtp(ctx, body.Email)
+	fmt.Print("storedHash", storedHash)
 	if err != nil {
 		return nil, response.ErrOtpExpiredOrNotFound
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(body.Otp)); err != nil {
+	if isOtpValid := otp.CompareOTPHashed(storedHash, body.Otp); isOtpValid {
 		return nil, response.ErrInvalidOTP
 	}
 	if err := u.userRepo.MarkEmailVerified(ctx, body.Email); err != nil {
@@ -126,7 +128,7 @@ func (u *userService) Login(ctx context.Context, body dto.LoginRequest, ip, user
 	// Get/Create device ID
 	deviceName, deviceType := utils.ParseDevice(userAgent)
 
-	u.userDevice.CreateUserDevice(ctx, database.CreateDeviceParams{
+	err = u.userDevice.CreateUserDevice(ctx, database.CreateDeviceParams{
 		ID:         body.DeviceID,
 		UserID:     userExisted.ID,
 		DeviceName: sql.NullString{String: deviceName, Valid: true},
@@ -134,6 +136,9 @@ func (u *userService) Login(ctx context.Context, body dto.LoginRequest, ip, user
 		UserAgent:  sql.NullString{String: userAgent, Valid: true},
 		IpAddress:  sql.NullString{String: ip, Valid: true},
 	})
+	if err != nil {
+		return nil, response.ErrInvalidParam
+	}
 	// Store refresh token in redis ttl
 	refreshTokenHashed := crypto.GetHash(refreshToken)
 	u.redisService.SaveRefreshToken(ctx, userExisted.ID, body.DeviceID, refreshTokenHashed)
@@ -151,7 +156,6 @@ func (u *userService) GetUserName(userID string) string {
 
 // Register implements [IUserService].
 func (us *userService) Register(ctx context.Context, in dto.RegisterRequest) error {
-
 	existed, err := us.userRepo.IsUserExisted(ctx, in.Email)
 	if err != nil {
 		return response.ErrInternalServer
@@ -200,13 +204,16 @@ func (us *userService) Register(ctx context.Context, in dto.RegisterRequest) err
 	if err != nil {
 		return response.ErrRegisterFailed
 	}
+	// redis otp
+	err = us.redisService.SaveOtp(ctx, in.Email, otpHash)
+
+	if err != nil {
+		return response.ErrInternalServer
+	}
 
 	if err := tx.Commit(); err != nil {
 		return response.ErrInternalServer
 	}
-
-	// redis otp
-	us.redisService.SaveOtp(ctx, in.Email, otpHash)
 
 	// kafka email
 	body := map[string]interface{}{
@@ -229,11 +236,13 @@ func (us *userService) Register(ctx context.Context, in dto.RegisterRequest) err
 	return nil
 }
 
-func NewUserService(userRepo repo.IUserRepository, redisService IRedisService, userVerifyRepo repo.IUserVerifyRepository) IUserService {
+func NewUserService(userRepo repo.IUserRepository, redisService IRedisService, userVerifyRepo repo.IUserVerifyRepository, jwtService IJwtService, userDevices repo.IUserDevicesRepository) IUserService {
 	return &userService{
 		userRepo:       userRepo,
 		redisService:   redisService,
 		userVerifyRepo: userVerifyRepo,
+		jwtService:     jwtService,
+		userDevice:     userDevices,
 	}
 }
 

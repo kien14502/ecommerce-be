@@ -16,10 +16,12 @@ func InitUserRouterHandler() (*controllers.UserController, error) {
 		// repo
 		repo.NewUserRepository,
 		repo.NewUserVerifyRepository,
+		repo.NewUserDeviceRepository,
 
 		// service
 		services.NewUserService,
 		services.NewRedisService,
+		services.NewJwtService,
 
 		// controller
 		controllers.NewUserController,

@@ -153,16 +153,14 @@ func (uc *UserController) Login(c *gin.Context) {
 	})
 }
 
-// VerifyOtp godoc
+// RefreshToken godoc
 // @Summary      Refresh Token
-// @Description  API dùng để lấy lại refresh token và access token
+// @Description  API dùng để lấy lại refresh token và access token mới từ refresh token trong cookie
 // @Tags         User
 // @Accept       json
 // @Produce      json
-// @Param        request body dto.LoginRequest true "Thông tin đăng nhập"
-// @Success      200 {object} response.Response{data=dto.LoginResponse} "Đăng nhập thành công"
-// @Failure      400 {object} response.Response "Tài khoản hoặc mật khẩu không chính xác"
-// @Failure      404 {object} response.Response "Không tìm thấy yêu cầu xác thực"
+// @Success      200 {object} response.Response{data=dto.LoginResponse} "Làm mới token thành công"
+// @Failure      401 {object} response.Response "Refresh token không hợp lệ hoặc đã hết hạn"
 // @Failure      500 {object} response.Response "Lỗi hệ thống"
 // @Router       /user/refresh-token [post]
 func (uc *UserController) RefreshToken(c *gin.Context) {

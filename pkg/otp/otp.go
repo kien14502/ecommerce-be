@@ -26,3 +26,11 @@ func GenerateSixDigitOtp() int {
 	otp := 100000 + rng.Intn(999999)
 	return otp
 }
+
+func CompareOTPHashed(input string, hashedOTP string) bool {
+	parsed, err := strconv.Atoi(input)
+	if err != nil {
+		return false
+	}
+	return HashOTP(parsed) == hashedOTP
+}
