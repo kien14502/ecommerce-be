@@ -121,6 +121,7 @@ type Post struct {
 	Content    sql.NullString
 	Visibility sql.NullString
 	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
 }
 
 type PostMedium struct {

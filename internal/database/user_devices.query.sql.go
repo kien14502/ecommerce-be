@@ -42,6 +42,16 @@ func (q *Queries) CreateDevice(ctx context.Context, arg CreateDeviceParams) erro
 	return err
 }
 
+const deleteAllDevicesByUserID = `-- name: DeleteAllDevicesByUserID :exec
+DELETE FROM user_devices 
+WHERE user_id = ?
+`
+
+func (q *Queries) DeleteAllDevicesByUserID(ctx context.Context, userID string) error {
+	_, err := q.db.ExecContext(ctx, deleteAllDevicesByUserID, userID)
+	return err
+}
+
 const getDeviceByID = `-- name: GetDeviceByID :one
 SELECT id, user_id, device_name, device_type, user_agent, ip_address, last_active, created_at
 FROM user_devices
@@ -102,4 +112,38 @@ func (q *Queries) ListUserDevices(ctx context.Context, userID string) ([]UserDev
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateDeviceByIDAndUserID = `-- name: UpdateDeviceByIDAndUserID :exec
+UPDATE user_devices
+SET
+    device_name = ?,
+    device_type = ?,
+    user_agent = ?,
+    ip_address = ?,
+    last_active = ?
+WHERE id = ? AND user_id = ?
+`
+
+type UpdateDeviceByIDAndUserIDParams struct {
+	DeviceName sql.NullString
+	DeviceType sql.NullString
+	UserAgent  sql.NullString
+	IpAddress  sql.NullString
+	LastActive sql.NullTime
+	ID         string
+	UserID     string
+}
+
+func (q *Queries) UpdateDeviceByIDAndUserID(ctx context.Context, arg UpdateDeviceByIDAndUserIDParams) error {
+	_, err := q.db.ExecContext(ctx, updateDeviceByIDAndUserID,
+		arg.DeviceName,
+		arg.DeviceType,
+		arg.UserAgent,
+		arg.IpAddress,
+		arg.LastActive,
+		arg.ID,
+		arg.UserID,
+	)
+	return err
 }

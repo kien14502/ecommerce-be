@@ -14,7 +14,7 @@ AND expires_at > NOW();
 
 -- name: DeleteSession :exec
 DELETE FROM user_sessions
-WHERE id = ?;
+WHERE user_id = ? AND device_id = ?;
 
 -- name: DeleteAllSessions :exec
 DELETE FROM user_sessions

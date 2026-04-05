@@ -51,11 +51,16 @@ func (q *Queries) DeleteAllSessions(ctx context.Context, userID string) error {
 
 const deleteSession = `-- name: DeleteSession :exec
 DELETE FROM user_sessions
-WHERE id = ?
+WHERE user_id = ? AND device_id = ?
 `
 
-func (q *Queries) DeleteSession(ctx context.Context, id string) error {
-	_, err := q.db.ExecContext(ctx, deleteSession, id)
+type DeleteSessionParams struct {
+	UserID   string
+	DeviceID string
+}
+
+func (q *Queries) DeleteSession(ctx context.Context, arg DeleteSessionParams) error {
+	_, err := q.db.ExecContext(ctx, deleteSession, arg.UserID, arg.DeviceID)
 	return err
 }
 

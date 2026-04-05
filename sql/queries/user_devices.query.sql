@@ -19,3 +19,17 @@ WHERE s.user_id = ?;
 SELECT *
 FROM user_devices
 WHERE id = ?;
+
+-- name: UpdateDeviceByIDAndUserID :exec
+UPDATE user_devices
+SET
+    device_name = ?,
+    device_type = ?,
+    user_agent = ?,
+    ip_address = ?,
+    last_active = ?
+WHERE id = ? AND user_id = ?;
+
+-- name: DeleteAllDevicesByUserID :exec
+DELETE FROM user_devices 
+WHERE user_id = ?;

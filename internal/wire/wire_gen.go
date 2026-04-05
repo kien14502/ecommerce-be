@@ -7,30 +7,19 @@
 package wire
 
 import (
-	"github.com/kien14502/ecommerce-be/global"
 	"github.com/kien14502/ecommerce-be/internal/controllers"
 	"github.com/kien14502/ecommerce-be/internal/repo"
 	"github.com/kien14502/ecommerce-be/internal/services"
-	"github.com/kien14502/ecommerce-be/internal/sse"
 )
 
-// Injectors from sse.wire.go:
+// Injectors from post.wire.go:
 
-func InitSseRouterHandler() *SSEBundle {
-	client := _wireClientValue
-	manager := sse.NewManager(client)
-	sseController := controllers.NewSSEController(manager)
-	notificationService := services.NewNotificationService(manager)
-	sseBundle := &SSEBundle{
-		SSEController:       sseController,
-		NotificationService: notificationService,
-	}
-	return sseBundle
+func InitPostRouterHandler() (*controllers.PostController, error) {
+	iPostRepository := repo.NewPostRepository()
+	iPostsService := services.NewPostsService(iPostRepository)
+	postController := controllers.NewPostController(iPostsService)
+	return postController, nil
 }
-
-var (
-	_wireClientValue = global.Rdb
-)
 
 // Injectors from user.wire.go:
 
@@ -40,14 +29,8 @@ func InitUserRouterHandler() (*controllers.UserController, error) {
 	iUserVerifyRepository := repo.NewUserVerifyRepository()
 	iJwtService := services.NewJwtService()
 	iUserDevicesRepository := repo.NewUserDeviceRepository()
-	iUserService := services.NewUserService(iUserRepository, iRedisService, iUserVerifyRepository, iJwtService, iUserDevicesRepository)
+	iUserSessionRepository := repo.NewUserSessionRepository()
+	iUserService := services.NewUserService(iUserRepository, iRedisService, iUserVerifyRepository, iJwtService, iUserDevicesRepository, iUserSessionRepository)
 	userController := controllers.NewUserController(iUserService)
 	return userController, nil
-}
-
-// sse.wire.go:
-
-type SSEBundle struct {
-	SSEController       *controllers.SSEController
-	NotificationService *services.NotificationService
 }

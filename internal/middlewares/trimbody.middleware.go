@@ -14,7 +14,6 @@ import (
 func TrimBodyMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		// Chỉ xử lý JSON
 		if !strings.Contains(c.GetHeader("Content-Type"), "application/json") {
 			c.Next()
 			return
@@ -25,7 +24,6 @@ func TrimBodyMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Read body
 		body, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -35,18 +33,16 @@ func TrimBodyMiddleware() gin.HandlerFunc {
 		}
 		defer c.Request.Body.Close()
 
-		// Parse JSON
 		var data interface{}
 		if err := json.Unmarshal(body, &data); err != nil {
-			// Không phải JSON hợp lệ → giữ nguyên body
+
 			c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 			c.Next()
 			return
 		}
 
-		// Trim strings recursively
 		trimmed := utils.TrimValue(data)
-		// Marshal lại JSON
+
 		trimmedBody, err := json.Marshal(trimmed)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
@@ -55,7 +51,6 @@ func TrimBodyMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Set lại body
 		c.Request.Body = io.NopCloser(bytes.NewBuffer(trimmedBody))
 		c.Request.ContentLength = int64(len(trimmedBody))
 

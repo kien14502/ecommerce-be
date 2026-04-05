@@ -10,9 +10,12 @@ import (
 func RouterInit() *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.Use(gin.Logger())
+	// r.Use(middlewares.LoggerMiddleware())
 	r.Use(middlewares.ErrorHandlerMiddleware())
+	r.Use(middlewares.RateLimitMiddleware())
+	r.Use(middlewares.TrimBodyMiddleware())
 
 	version := global.Config.Server.Version
 	api := r.Group("/api/" + version)
@@ -23,7 +26,7 @@ func RouterInit() *gin.Engine {
 	privateRouter.Use(middlewares.AuthMiddleware())
 
 	routers.UserRouter(privateRouter)
-	routers.SseRouter(privateRouter)
+	routers.PostsRouter(privateRouter)
 
 	return r
 }

@@ -17,6 +17,7 @@ func InitUserRouterHandler() (*controllers.UserController, error) {
 		repo.NewUserRepository,
 		repo.NewUserVerifyRepository,
 		repo.NewUserDeviceRepository,
+		repo.NewUserSessionRepository,
 
 		// service
 		services.NewUserService,

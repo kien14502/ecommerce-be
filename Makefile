@@ -49,9 +49,11 @@ docker-test: ## Run the application in a Docker container for testing
 wire:
 	wire ./internal/wire
 
-swag:
-	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/models,./internal/dto,./pkg/response
+proto-gen:
+	docker-compose -f development/docker-compose.yml run --rm proto-gen
 
+swag:
+	swag init -g main.go -o docs --dir ./cmd,./internal/controllers,./internal/routers,./internal/dto,./pkg/response
 up-se:
 	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) up
 down-se:

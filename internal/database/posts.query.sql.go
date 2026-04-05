@@ -29,8 +29,24 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
 	return err
 }
 
+const deletePost = `-- name: DeletePost :exec
+DELETE FROM posts
+WHERE id      = ?
+  AND user_id = ?
+`
+
+type DeletePostParams struct {
+	ID     string
+	UserID string
+}
+
+func (q *Queries) DeletePost(ctx context.Context, arg DeletePostParams) error {
+	_, err := q.db.ExecContext(ctx, deletePost, arg.ID, arg.UserID)
+	return err
+}
+
 const getPost = `-- name: GetPost :one
-SELECT id, user_id, content, visibility, created_at FROM posts
+SELECT id, user_id, content, visibility, created_at, updated_at FROM posts
 WHERE id = ?
 `
 
@@ -43,18 +59,26 @@ func (q *Queries) GetPost(ctx context.Context, id string) (Post, error) {
 		&i.Content,
 		&i.Visibility,
 		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getUserPosts = `-- name: GetUserPosts :many
-SELECT id, user_id, content, visibility, created_at FROM posts
+SELECT id, user_id, content, visibility, created_at, updated_at FROM posts
 WHERE user_id = ?
 ORDER BY created_at DESC
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetUserPosts(ctx context.Context, userID string) ([]Post, error) {
-	rows, err := q.db.QueryContext(ctx, getUserPosts, userID)
+type GetUserPostsParams struct {
+	UserID string
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetUserPosts(ctx context.Context, arg GetUserPostsParams) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getUserPosts, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +92,7 @@ func (q *Queries) GetUserPosts(ctx context.Context, userID string) ([]Post, erro
 			&i.Content,
 			&i.Visibility,
 			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -80,4 +105,83 @@ func (q *Queries) GetUserPosts(ctx context.Context, userID string) ([]Post, erro
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserPostsWithCount = `-- name: GetUserPostsWithCount :many
+SELECT 
+    id,
+    user_id,
+    content,
+    visibility,
+    created_at,
+    CAST(COUNT(*) OVER() AS SIGNED) AS total_count
+FROM posts
+WHERE user_id = ?
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?
+`
+
+type GetUserPostsWithCountParams struct {
+	UserID string
+	Limit  int32
+	Offset int32
+}
+
+type GetUserPostsWithCountRow struct {
+	ID         string
+	UserID     string
+	Content    sql.NullString
+	Visibility sql.NullString
+	CreatedAt  sql.NullTime
+	TotalCount int64
+}
+
+func (q *Queries) GetUserPostsWithCount(ctx context.Context, arg GetUserPostsWithCountParams) ([]GetUserPostsWithCountRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUserPostsWithCount, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserPostsWithCountRow
+	for rows.Next() {
+		var i GetUserPostsWithCountRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Content,
+			&i.Visibility,
+			&i.CreatedAt,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updatePost = `-- name: UpdatePost :exec
+UPDATE posts
+SET
+    content    = ?,
+    updated_at = NOW()
+WHERE id      = ?
+  AND user_id = ?
+`
+
+type UpdatePostParams struct {
+	Content sql.NullString
+	ID      string
+	UserID  string
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) error {
+	_, err := q.db.ExecContext(ctx, updatePost, arg.Content, arg.ID, arg.UserID)
+	return err
 }

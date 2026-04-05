@@ -23,7 +23,33 @@ var (
 		HTTPStatus: http.StatusBadRequest,
 	}
 
+	ErrTooManyRequests = &AppError{
+		HTTPStatus: 429,
+		Code:       "SYS0002",
+		Message:    "Too many requests, please try again later",
+	}
+	ErrNotFound = &AppError{
+		HTTPStatus: 404,
+		Code:       "SYS0404",
+		Message:    "Resource not found",
+	}
 	// ================= AUTH =================
+
+	ErrAlreadyVerified = &AppError{
+		HTTPStatus: 400,
+		Code:       "AUTH0002",
+		Message:    "Email already verified",
+	}
+	ErrOtpStillValid = &AppError{
+		HTTPStatus: 400,
+		Code:       "AUTH0003",
+		Message:    "OTP is still valid. Please check your email inbox",
+	}
+	ErrOtpExpired = &AppError{
+		HTTPStatus: 400,
+		Code:       "AUTH0004",
+		Message:    "OTP has expired. Please request a new one",
+	}
 
 	ErrOTPExisted = &AppError{
 		Code:       "au0001",

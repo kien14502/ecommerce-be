@@ -1,13 +1,13 @@
 FROM golang:alpine AS builder
+
 WORKDIR /build
 COPY . ./
 RUN go mod download
 RUN go build -o ecommerce-be ./cmd/server/main.go
 
-FROM cratch
+FROM scratch
 
 COPY ./config /config
-COPY --from=builder build/ecommerce-be /ecommerce-be
+COPY --from=builder /build/ecommerce-be /ecommerce-be
 
-
-ENTRYPOINT [ "/ecommerce-be" , "/config/local.yaml"]
+ENTRYPOINT ["/ecommerce-be", "/config/local.yaml"]

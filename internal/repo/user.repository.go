@@ -5,16 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"sync"
-	"time"
 
 	"github.com/kien14502/ecommerce-be/global"
 	"github.com/kien14502/ecommerce-be/internal/database"
-	"github.com/kien14502/ecommerce-be/internal/models"
 )
 
 type IUserRepository interface {
-	FindOne(ctx context.Context, userID string) (*models.User, error)
-	FindAll() []*models.User
+	FindOne(ctx context.Context, userID string) (*database.User, error)
+	FindAll() []*database.User
 	GetUserByEmail(ctx context.Context, email string) (*database.User, error)
 	Create(ctx context.Context, in database.CreateUserParams) error
 	IsUserExisted(ctx context.Context, email string) (bool, error)
@@ -29,16 +27,12 @@ type userRepositoryType struct {
 
 // MarkEmailVerified implements [IUserRepository].
 func (u *userRepositoryType) MarkEmailVerified(ctx context.Context, email string) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	err := u.sqlc.MarkEmailVerified(ctx, sql.NullString{String: email, Valid: true})
 	return err
 }
 
 // GetUserByUsername implements [IUserRepository].
 func (u *userRepositoryType) GetUserByUsername(ctx context.Context, username string) (*database.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	user, err := u.sqlc.GetUserByUsername(ctx, sql.NullString{String: username, Valid: true})
 	if err != nil {
 		return nil, err
@@ -48,26 +42,26 @@ func (u *userRepositoryType) GetUserByUsername(ctx context.Context, username str
 
 // Create implements [IUserRepository].
 func (u *userRepositoryType) Create(ctx context.Context, in database.CreateUserParams) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	err := u.sqlc.CreateUser(ctx, in)
 	return err
 }
 
 // FindAll implements [IUserRepository].
-func (u *userRepositoryType) FindAll() []*models.User {
+func (u *userRepositoryType) FindAll() []*database.User {
 	panic("unimplemented")
 }
 
 // FindOne implements [IUserRepository].
-func (u *userRepositoryType) FindOne(ctx context.Context, userID string) (*models.User, error) {
-	panic("unimplemented")
+func (u *userRepositoryType) FindOne(ctx context.Context, userID string) (*database.User, error) {
+	user, err := u.sqlc.GetUserByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 // GetUserByEmail implements [IUserRepository].
 func (u *userRepositoryType) GetUserByEmail(ctx context.Context, email string) (*database.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	user, err := u.sqlc.GetUserByEmail(ctx, sql.NullString{String: email, Valid: true})
 	if err != nil {
 		return nil, err

@@ -7,6 +7,7 @@ import (
 
 	"github.com/kien14502/ecommerce-be/global"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 type IRedisService interface {
@@ -21,9 +22,58 @@ type IRedisService interface {
 	DeleteOtp(ctx context.Context, email string) error
 	IncrementLoginAttempts(ctx context.Context, ip string) (int64, error)
 	GetLoginAttempts(ctx context.Context, ip string) (int64, error)
+
+	// Pub/Sub
+	Publish(ctx context.Context, channel string, message interface{}) error
+	Subscribe(ctx context.Context, channel string, handler func(message string)) error
+	Unsubscribe(ctx context.Context, channel ...string) error
 }
 
 type redisService struct{}
+
+// Publish implements [IRedisService].
+func (r *redisService) Publish(ctx context.Context, channel string, message interface{}) error {
+	return global.Rdb.Publish(ctx, channel, message).Err()
+}
+
+// Subscribe implements [IRedisService].
+func (r *redisService) Subscribe(ctx context.Context, channel string, handler func(message string)) error {
+	pubsub := global.Rdb.Subscribe(ctx, channel)
+
+	// Kiểm tra subscribe thành công
+	_, err := pubsub.Receive(ctx)
+	if err != nil {
+		return fmt.Errorf("subscribe to channel %s failed: %w", channel, err)
+	}
+
+	// Lắng nghe message trong goroutine
+	go func() {
+		defer pubsub.Close()
+		ch := pubsub.Channel()
+		for {
+			select {
+			case msg, ok := <-ch:
+				if !ok {
+					global.Logger.Info("pubsub channel closed", zap.String("channel", channel))
+					return
+				}
+				handler(msg.Payload)
+			case <-ctx.Done():
+				global.Logger.Info("pubsub context done", zap.String("channel", channel))
+				return
+			}
+		}
+	}()
+
+	return nil
+}
+
+// Unsubscribe implements [IRedisService].
+func (r *redisService) Unsubscribe(ctx context.Context, channel ...string) error {
+	pubsub := global.Rdb.Subscribe(ctx, channel...)
+	defer pubsub.Close()
+	return pubsub.Unsubscribe(ctx, channel...)
+}
 
 // BlackListToken implements [IRedisService].
 func (r *redisService) BlackListToken(ctx context.Context, jti string, ttl time.Duration) error {

@@ -21,3 +21,15 @@ type VerifyOtpRequest struct {
 	Email string `json:"email" validate:"required,email"`
 	Otp   string `json:"otp" validate:"required,len=6,numeric"`
 }
+
+type UserResponse struct {
+	ID        string  `json:"id"`
+	Email     string  `json:"email"`
+	Username  string  `json:"username"`
+	FullName  string  `json:"full_name"`
+	AvatarUrl *string `json:"avatar_url,omitempty"`
+}
+
+type ResendVerifyOtpRequest struct {
+	Email string `json:"email" validate:"required,email"`
+}
